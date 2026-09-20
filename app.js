@@ -11,16 +11,26 @@ const firebaseConfig = {
 
 // Initialize Firebase & Firestore securely
 let db = null;
-let analytics = null;
+let auth = null;
 try {
-    if (typeof firebase !== 'undefined' || typeof initializeApp !== 'undefined') {
-        const app = initializeApp(firebaseConfig);
+    if (typeof firebase !== 'undefined' && firebase.initializeApp) {
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
         db = firebase.firestore ? firebase.firestore() : null;
+        auth = firebase.auth ? firebase.auth() : null;
         console.log("Firebase initialized successfully!");
     }
 } catch (e) {
     console.log("Firebase initialization warning, running fallback mode:", e);
 }
+
+// Unified Packages Configuration (Synced across Home and Customer Hub)
+const KARUTHAL_PACKAGES = {
+    basic: { id: 'PKG-BASIC', name: 'Essential Support Plan', price: 1499, displayPrice: '₹1,499 / mo', desc: 'Ideal for occasional doctor visits and monthly checkup coordination.' },
+    gold: { id: 'PKG-GOLD', name: 'Senior Family Complete', price: 3499, displayPrice: '₹3,499 / mo', desc: 'Comprehensive monthly support for regular checkups and emergency coverage.' },
+    platinum: { id: 'PKG-PLATINUM', name: 'VIP Total Health Guard', price: 6999, displayPrice: '₹6,999 / mo', desc: 'Unlimited dedicated support, priority transport, and complete family health records.' }
+};
 
 const RATES_CONFIG = {
     hatchback_sedan: { minTariff: 300, perKmRate: 15, driverBatta: 250 },
@@ -33,10 +43,7 @@ function initStorage() {
         localStorage.setItem('karuthal_admin', JSON.stringify({ user: 'admin', pass: 'admin123', name: 'System Administrator' }));
     }
     if (!localStorage.getItem('karuthal_packages')) {
-        localStorage.setItem('karuthal_packages', JSON.stringify([
-            { id: 'PKG-STD', name: 'Karuthal Standard Package', price: 3500, desc: 'Daily health check calls & 2 Hospital Visits included.' },
-            { id: 'PKG-PREM', name: 'Karuthal Premium Care Plan', price: 7500, desc: '24/7 Priority Emergency Support & Bi-weekly Nurse Visits.' }
-        ]));
+        localStorage.setItem('karuthal_packages', JSON.stringify(Object.values(KARUTHAL_PACKAGES)));
     }
     if (!localStorage.getItem('karuthal_staff')) {
         localStorage.setItem('karuthal_staff', JSON.stringify([
@@ -57,7 +64,7 @@ function initStorage() {
     if (!localStorage.getItem('karuthal_clients')) {
         localStorage.setItem('karuthal_clients', JSON.stringify([
             { 
-                id: 'CLI-501', name: 'K. P. Menon', age: 76, phone: '9846011223', location: 'Kadavanthra, Kochi', plan: 'Premium Care Plan',
+                id: 'CLI-501', name: 'K. P. Menon', age: 76, phone: '9846011223', location: 'Kadavanthra, Kochi', plan: 'Senior Family Complete',
                 lastHospitalVisit: '10 Sep 2026 - Amrita Hospital, Cardiology Checkup',
                 diagnosis: 'Hypertension & Mild Type-2 Diabetes',
                 medicines: ['Amlodipine 5mg (1-0-0)', 'Metformin 500mg (1-0-1)']
