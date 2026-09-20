@@ -1,20 +1,23 @@
-{
-  "hosting": {
-    "public": ".",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/portal.html"
-      }
-    ]
-  },
-  "firestore": {
-    "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
-  }
-}
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+// Karuthal Project Firebase Configuration
+export const firebaseConfig = {
+    apiKey: "AIzaSyBhxl9LMeylfZSbnQ1iIPVk36uzbgnKu9k",
+    authDomain: "karuthal-app.firebaseapp.com",
+    projectId: "karuthal-app",
+    storageBucket: "karuthal-app.firebasestorage.app",
+    messagingSenderId: "197224202940",
+    appId: "1:197224202940:web:0cf31d570e39cdd667c6b9",
+    measurementId: "G-03D8R37C2G"
+};
+
+// Initialize Firebase App
+const app = initializeApp(firebaseConfig);
+
+// Initialize Firebase Services
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+
+export default app;
