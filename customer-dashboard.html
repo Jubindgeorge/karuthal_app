@@ -285,15 +285,27 @@
     <script>
         let mapInstance = null, markerInstance = null;
 
-        window.onload = function() {
-            initStorage();
-            loadParentProfiles();
-            loadActivePackage();
-            setTimeout(() => {
-                initCustomerMap();
-                startLiveMapSyncPolling();
-            }, 200);
-        };
+window.onload = function() {
+    const custSession = JSON.parse(localStorage.getItem('karuthal_customer_session') || 'null');
+    if (!custSession) {
+        // Session illenkil direct login page-ilekku redirect cheyyunnu
+        location.href = 'customer-login.html';
+        return;
+    }
+    initStorage();
+    loadParentProfiles();
+    loadActivePackage();
+    setTimeout(() => {
+        initCustomerMap();
+        startLiveMapSyncPolling();
+    }, 200);
+};
+
+function logoutCustomer() {
+    localStorage.removeItem('karuthal_customer_session');
+    showToast("Logged out from Customer Hub.");
+    setTimeout(() => { location.href = 'customer-login.html'; }, 1000);
+}
 
         function selectPackage(packageName, price) {
             localStorage.setItem('karuthal_active_package', JSON.stringify({ name: packageName, price: price, date: new Date().toLocaleDateString() }));
