@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Karuthal - Staff & Driver Secure Portal</title>
+    <title>Karuthal - Admin & Secure Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -16,8 +16,8 @@
         <div class="flex items-center gap-3 cursor-pointer" onclick="location.href='portal.html'">
             <div class="bg-emerald-600 text-white w-10 h-10 rounded-2xl flex items-center justify-center font-black text-lg shadow-md">K</div>
             <div>
-                <h1 class="font-extrabold text-slate-900 leading-none text-base">Karuthal Staff & Driver Portal</h1>
-                <span class="text-[11px] text-emerald-600 font-bold">Authorized Personnel Only</span>
+                <h1 class="font-extrabold text-slate-900 leading-none text-base">Karuthal Admin & Staff Portal</h1>
+                <span class="text-[11px] text-emerald-600 font-bold">Full System Control Center</span>
             </div>
         </div>
         <div class="flex items-center gap-2">
@@ -27,121 +27,155 @@
     </header>
 
     <!-- MAIN CONTAINER -->
-    <main class="max-w-4xl w-full mx-auto p-6 flex-grow space-y-6 flex flex-col items-center justify-center">
+    <main class="max-w-6xl w-full mx-auto p-6 flex-grow space-y-6">
 
         <!-- AUTH LOGIN SCREEN -->
-        <div id="authLoginView" class="max-w-md w-full bg-white rounded-3xl border p-8 space-y-6 shadow-xl my-8">
+        <div id="authLoginView" class="max-w-md mx-auto bg-white rounded-3xl border p-8 space-y-6 shadow-xl my-12">
             <div class="text-center space-y-2">
                 <div class="bg-emerald-100 text-emerald-800 w-12 h-12 rounded-2xl flex items-center justify-center mx-auto text-xl font-black shadow-inner">
                     <i class="fa-solid fa-shield-halved"></i>
                 </div>
-                <h2 class="font-extrabold text-slate-900 text-xl">Staff & Driver Portal Login</h2>
-                <p class="text-xs text-slate-500">Sign in securely to manage rides, drivers, and medical feeds.</p>
+                <h2 class="font-extrabold text-slate-900 text-xl">Admin & Staff Portal Login</h2>
+                <p class="text-xs text-slate-500">Sign in with admin credentials for full system control.</p>
             </div>
 
-            <div class="space-y-4">
+            <div class="space-y-4 text-xs">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Email / ID *</label>
-                    <input type="text" id="loginEmail" placeholder="admin@karuthal.app / driver@karuthal.app" class="w-full bg-slate-50 border rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-emerald-600">
+                    <label class="block font-bold text-slate-700 mb-1">Email / ID *</label>
+                    <input type="text" id="loginEmail" placeholder="admin or admin@karuthal.app" class="w-full bg-slate-50 border rounded-xl px-4 py-3 focus:outline-none focus:border-emerald-600">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Password *</label>
-                    <input type="password" id="loginPassword" placeholder="••••••••" class="w-full bg-slate-50 border rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-emerald-600">
+                    <label class="block font-bold text-slate-700 mb-1">Password *</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" class="w-full bg-slate-50 border rounded-xl px-4 py-3 focus:outline-none focus:border-emerald-600">
                 </div>
 
-                <button onclick="handleAuthAction()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3.5 rounded-xl shadow transition text-xs">Sign In to Portal</button>
+                <button onclick="handleAuthAction()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3.5 rounded-xl shadow transition text-xs">Sign In to Admin Portal</button>
                 
-                <div class="text-center pt-2 border-t text-xs text-slate-500">
+                <div class="text-center pt-2 border-t text-slate-500">
                     Are you a customer? <a href="customer-login.html" class="text-emerald-600 hover:underline font-bold">Go to Customer Login &rarr;</a>
                 </div>
             </div>
         </div>
 
-        <!-- ADMIN / STAFF MANAGEMENT PANEL -->
-        <div id="adminStaffManagementView" class="hidden w-full bg-white rounded-3xl border p-6 space-y-6 shadow-sm my-6">
-            <div class="border-b pb-4 flex justify-between items-center">
+        <!-- COMPLETE ADMIN CONTROL DASHBOARD -->
+        <div id="adminControlDashboard" class="hidden space-y-6">
+
+            <!-- STATS / OVERVIEW BANNER -->
+            <div class="bg-gradient-to-r from-slate-900 to-emerald-950 text-white rounded-3xl p-6 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h3 class="font-extrabold text-slate-900 text-base">Authorized Staff & Driver Account Generator</h3>
-                    <p class="text-xs text-slate-500">Register new drivers and staff members here.</p>
+                    <span class="bg-emerald-500 text-slate-950 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">Super Admin Active</span>
+                    <h2 class="font-extrabold text-xl mt-1">Welcome, System Administrator</h2>
+                    <p class="text-xs text-slate-300">You have full administrative privileges to manage packages, users, drivers, and bookings.</p>
                 </div>
-                <span class="bg-red-100 text-red-800 text-[10px] font-black px-2.5 py-1 rounded-full uppercase">Admin Privileges</span>
+                <div class="flex gap-2">
+                    <button onclick="exportSystemData()" class="bg-white/10 hover:bg-white/20 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition border border-white/20">Export Data</button>
+                </div>
             </div>
 
-            <form onsubmit="event.preventDefault(); createNewStaffOrDriverAccount();" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                <div>
-                    <label class="font-bold text-slate-700 block mb-1">Select Account Type *</label>
-                    <select id="newAccType" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
-                        <option value="driver">Taxi Driver Account</option>
-                        <option value="staff">Care Staff / Coordinator Account</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="font-bold text-slate-700 block mb-1">Full Name *</label>
-                    <input type="text" id="newAccName" placeholder="Ramesh Kumar" required class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
-                </div>
-                <div>
-                    <label class="font-bold text-slate-700 block mb-1">Phone Number *</label>
-                    <input type="tel" id="newAccPhone" placeholder="9847112233" required class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
-                </div>
-                <div>
-                    <label class="font-bold text-slate-700 block mb-1">Generated Temporary Password *</label>
-                    <input type="text" id="newAccPass" value="karuthal2026" required class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
-                </div>
-                <div class="md:col-span-2">
-                    <button type="submit" class="w-full bg-slate-900 hover:bg-emerald-600 text-white font-extrabold py-3 rounded-xl transition shadow">Create & Authorize New Account</button>
-                </div>
-            </form>
+            <!-- GRID CONTROLS -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-            <div class="pt-4 border-t space-y-3">
-                <h4 class="font-extrabold text-slate-900 text-sm">Active Staff & Driver Directory</h4>
-                <div id="adminAccountsListContainer" class="space-y-2 max-h-60 overflow-y-auto"></div>
-            </div>
-        </div>
-
-        <!-- DASHBOARD WRAPPER -->
-        <div id="portalDashboardWrapper" class="hidden w-full space-y-6">
-
-            <!-- TAXI DRIVER VIEW -->
-            <div id="driverPortalView" class="hidden space-y-6 w-full">
+                <!-- 1. CARE PACKAGES MANAGEMENT -->
                 <div class="bg-white rounded-3xl border p-6 space-y-4 shadow-sm">
-                    <div class="flex justify-between items-center border-b pb-3">
-                        <h3 class="font-extrabold text-slate-900 text-base">Taxi Driver Live GPS Broadcast</h3>
-                        <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-1 rounded-full">Driver Portal</span>
+                    <div class="border-b pb-3 flex justify-between items-center">
+                        <h3 class="font-extrabold text-slate-900 text-sm"><i class="fa-solid fa-box text-emerald-600 mr-2"></i> Care Packages Manager</h3>
+                        <span class="text-[10px] bg-emerald-50 text-emerald-700 font-bold px-2.5 py-1 rounded-lg">Pricing Control</span>
                     </div>
-                    <div class="bg-slate-900 text-white p-5 rounded-3xl space-y-4 text-xs shadow-md">
-                        <div class="flex justify-between font-bold text-emerald-400">
-                            <span><i class="fa-solid fa-satellite-dish animate-pulse"></i> LIVE GPS TRANSMITTER</span>
-                            <span id="gpsStatusBadge" class="bg-slate-800 text-slate-300 px-2.5 py-0.5 rounded text-[10px]">Standby</span>
-                        </div>
-                        <p class="text-slate-300">• Broadcast coordinates continuously to the customer portal in real-time.</p>
-                        <div id="driverLiveMap" class="w-full h-48 rounded-2xl z-0 border border-slate-700"></div>
-                        <button onclick="startLiveGPSBroadcast()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow transition">Start Live Location Tracking</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- STAFF / ADMIN VIEW -->
-            <div id="staffPortalView" class="hidden space-y-6 w-full">
-                <div class="bg-white rounded-3xl border p-6 space-y-4 shadow-sm">
-                    <div class="flex justify-between items-center border-b pb-4">
+                    <div class="space-y-3 text-xs">
                         <div>
-                            <h3 class="font-extrabold text-slate-900 text-base">Staff & Admin Medical Hub</h3>
-                            <span class="text-[11px] text-emerald-700 font-bold">Authorized Personnel Only</span>
+                            <label class="font-bold text-slate-700 block mb-1">Package Name</label>
+                            <input type="text" id="adminPkgName" placeholder="Elite Care Plan" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
                         </div>
-                        <button onclick="toggleStaffVideoStream()" id="camStreamBtn" class="bg-red-600 hover:bg-red-700 text-white text-xs font-black px-4 py-2.5 rounded-xl shadow flex items-center gap-2 transition">
-                            <i class="fa-solid fa-video"></i> <span id="camBtnText">Start Camera Stream</span>
-                        </button>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="font-bold text-slate-700 block mb-1">Price (₹ / mo)</label>
+                                <input type="number" id="adminPkgPrice" placeholder="5999" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="font-bold text-slate-700 block mb-1">ID Tag</label>
+                                <input type="text" id="adminPkgId" placeholder="PKG-ELITE" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="font-bold text-slate-700 block mb-1">Description</label>
+                            <input type="text" id="adminPkgDesc" placeholder="24/7 dedicated nursing & unlimited rides" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
+                        </div>
+                        <button onclick="adminSavePackage()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition shadow">Add / Update Package</button>
                     </div>
-                    
-                    <div class="relative bg-slate-900 rounded-3xl overflow-hidden aspect-video flex items-center justify-center shadow-inner">
-                        <video id="staffWebcamFeed" autoplay playsinline muted class="w-full h-full object-cover hidden"></video>
-                        <div id="camPlaceholder" class="text-center text-slate-400 space-y-2">
-                            <i class="fa-solid fa-video-slash text-4xl"></i>
-                            <p class="text-xs">Camera stream is offline. Click 'Start Camera Stream' to broadcast.</p>
+                    <div class="pt-2 border-t space-y-2 max-h-40 overflow-y-auto" id="adminPackagesList"></div>
+                </div>
+
+                <!-- 2. STAFF & DRIVER ACCOUNT GENERATOR -->
+                <div class="bg-white rounded-3xl border p-6 space-y-4 shadow-sm">
+                    <div class="border-b pb-3 flex justify-between items-center">
+                        <h3 class="font-extrabold text-slate-900 text-sm"><i class="fa-solid fa-users-gear text-emerald-600 mr-2"></i> Staff & Driver Authorization</h3>
+                        <span class="text-[10px] bg-blue-50 text-blue-700 font-bold px-2.5 py-1 rounded-lg">Access Control</span>
+                    </div>
+                    <div class="space-y-3 text-xs">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="font-bold text-slate-700 block mb-1">Role Type</label>
+                                <select id="admAccType" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
+                                    <option value="driver">Taxi Driver</option>
+                                    <option value="staff">Care Staff / Coordinator</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="font-bold text-slate-700 block mb-1">Full Name</label>
+                                <input type="text" id="admAccName" placeholder="Rajesh Kumar" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
+                            </div>
                         </div>
-                        <div id="liveBadge" class="absolute top-4 left-4 bg-red-600 text-white font-black text-[10px] px-3 py-1 rounded-full uppercase tracking-wider hidden animate-pulse">
-                            ● LIVE BROADCASTING
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="font-bold text-slate-700 block mb-1">Phone Number</label>
+                                <input type="tel" id="admAccPhone" placeholder="9847112233" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="font-bold text-slate-700 block mb-1">Password</label>
+                                <input type="text" id="admAccPass" value="karuthal2026" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
+                            </div>
                         </div>
+                        <button onclick="adminCreateAccount()" class="w-full bg-slate-900 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl transition shadow">Authorize & Create Account</button>
+                    </div>
+                    <div class="pt-2 border-t space-y-2 max-h-40 overflow-y-auto" id="adminStaffDriversList"></div>
+                </div>
+
+            </div>
+
+            <!-- 3. REGISTERED CUSTOMERS & PARENTS MONITOR -->
+            <div class="bg-white rounded-3xl border p-6 space-y-4 shadow-sm">
+                <div class="border-b pb-3 flex justify-between items-center">
+                    <h3 class="font-extrabold text-slate-900 text-sm"><i class="fa-solid fa-hospital-user text-emerald-600 mr-2"></i> Registered Customers & Senior Patients Directory</h3>
+                    <span class="text-[10px] bg-slate-100 text-slate-700 font-bold px-2.5 py-1 rounded-lg">Database View</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-slate-700">Customers / Family Members</h4>
+                        <div id="adminCustomersList" class="space-y-2 max-h-48 overflow-y-auto"></div>
+                    </div>
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-slate-700">Senior Patients Profiles</h4>
+                        <div id="adminPatientsList" class="space-y-2 max-h-48 overflow-y-auto"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. LIVE GPS & STREAMING MONITOR FOR ADMIN -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Driver GPS -->
+                <div class="bg-white rounded-3xl border p-6 space-y-4 shadow-sm">
+                    <h3 class="font-extrabold text-slate-900 text-sm"><i class="fa-solid fa-location-dot text-red-500 mr-2"></i> Live Driver GPS Tracking Monitor</h3>
+                    <div id="adminLiveMap" class="w-full h-48 rounded-2xl border z-0"></div>
+                </div>
+                <!-- Staff Video Stream -->
+                <div class="bg-white rounded-3xl border p-6 space-y-4 shadow-sm">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-extrabold text-slate-900 text-sm"><i class="fa-solid fa-video text-emerald-600 mr-2"></i> Staff Medical Hub Stream</h3>
+                        <button onclick="toggleAdminStream()" id="adminCamBtn" class="bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl">Start Camera Feed</button>
+                    </div>
+                    <div class="relative bg-slate-900 rounded-2xl overflow-hidden aspect-video flex items-center justify-center">
+                        <video id="adminWebcamFeed" autoplay playsinline muted class="w-full h-full object-cover hidden"></video>
+                        <div id="adminCamPlaceholder" class="text-slate-400 text-xs">Camera offline</div>
                     </div>
                 </div>
             </div>
@@ -151,36 +185,25 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="text-center py-6 text-xs text-slate-400 border-t bg-white">
-        &copy; 2026 Karuthal Project. All rights reserved. Encrypted & Secured Access.
+    <footer class="text-center py-6 text-xs text-slate-400 border-t bg-white mt-12">
+        &copy; 2026 Karuthal Project. Super Admin Control Panel.
     </footer>
 
     <!-- SCRIPT LOGIC -->
     <script src="app.js"></script>
     <script>
-        let driverMapInstance = null, driverMarkerInstance = null;
-        let mediaStreamObj = null;
-        let watchId = null;
+        let adminMapInstance = null, adminMarkerInstance = null;
+        let adminMediaStream = null;
 
         window.onload = function() {
             initStorage();
-            checkExistingSession();
+            checkAdminSession();
         };
 
-        window.addEventListener('beforeunload', () => {
-            if (mediaStreamObj) {
-                mediaStreamObj.getTracks().forEach(track => track.stop());
-            }
-        });
-
-        function checkExistingSession() {
+        function checkAdminSession() {
             const session = JSON.parse(localStorage.getItem('karuthal_session') || 'null');
-            if (session) {
-                if (session.role === 'admin' || session.role === 'staff') {
-                    revealAdminDashboard(session.email);
-                } else if (session.role === 'driver') {
-                    revealDriverDashboard();
-                }
+            if (session && (session.role === 'admin' || session.email?.includes('admin'))) {
+                revealAdminDashboard();
             }
         }
 
@@ -193,168 +216,171 @@
                 return;
             }
 
-            // Strictly restrict customer logins from this portal
-            if (email.toLowerCase().includes('customer') || !email.includes('admin') && !email.includes('staff') && !email.includes('driver')) {
-                showToast("Customers cannot login here. Please use Customer Login.", "error");
-                setTimeout(() => { location.href = 'customer-login.html'; }, 1500);
-                return;
-            }
-
-            if (email.includes('admin') || email.includes('staff')) {
+            if (email.toLowerCase().includes('admin') || email.toLowerCase().includes('staff') || email === 'admin') {
                 localStorage.setItem('karuthal_session', JSON.stringify({ email, role: 'admin' }));
-                revealAdminDashboard(email);
-            } else if (email.includes('driver')) {
-                localStorage.setItem('karuthal_session', JSON.stringify({ email, role: 'driver' }));
-                revealDriverDashboard();
+                revealAdminDashboard();
+                showToast("Admin Login Successful!");
             } else {
-                showToast("Invalid staff or driver credentials.", "error");
+                showToast("Invalid admin credentials.", "error");
             }
         }
 
-        function revealDriverDashboard() {
+        function revealAdminDashboard() {
             document.getElementById('authLoginView').classList.add('hidden');
-            document.getElementById('portalDashboardWrapper').classList.remove('hidden');
-            document.getElementById('driverPortalView').classList.remove('hidden');
+            document.getElementById('adminControlDashboard').classList.remove('hidden');
             document.getElementById('logoutBtn').classList.remove('hidden');
-            setTimeout(() => initDriverMap(), 200);
-            showToast("Welcome to Driver Portal!");
-        }
-
-        function revealAdminDashboard(email) {
-            document.getElementById('authLoginView').classList.add('hidden');
-            document.getElementById('portalDashboardWrapper').classList.remove('hidden');
-            document.getElementById('staffPortalView').classList.remove('hidden');
-            document.getElementById('adminStaffManagementView').classList.remove('hidden');
-            document.getElementById('logoutBtn').classList.remove('hidden');
-            loadAllRegisteredAccountsRoute();
-            showToast("Welcome Authorized Admin/Staff: " + email);
+            loadAdminDataViews();
+            setTimeout(() => initAdminMap(), 300);
         }
 
         function logoutUser() {
             localStorage.removeItem('karuthal_session');
-            if (watchId !== null) navigator.geolocation.clearWatch(watchId);
-            if (mediaStreamObj) {
-                mediaStreamObj.getTracks().forEach(track => track.stop());
-                mediaStreamObj = null;
+            if (adminMediaStream) {
+                adminMediaStream.getTracks().forEach(t => t.stop());
             }
-            document.getElementById('portalDashboardWrapper').classList.add('hidden');
-            document.getElementById('driverPortalView').classList.add('hidden');
-            document.getElementById('staffPortalView').classList.add('hidden');
-            document.getElementById('adminStaffManagementView').classList.add('hidden');
+            document.getElementById('adminControlDashboard').classList.add('hidden');
             document.getElementById('authLoginView').classList.remove('hidden');
             document.getElementById('logoutBtn').classList.add('hidden');
-            showToast("Logged out securely.");
+            showToast("Logged out successfully.");
         }
 
-        function createNewStaffOrDriverAccount() {
-            const type = document.getElementById('newAccType').value;
-            const name = document.getElementById('newAccName').value;
-            const phone = document.getElementById('newAccPhone').value;
-            const pass = document.getElementById('newAccPass').value;
+        // Load Admin Data Views
+        function loadAdminDataViews() {
+            // 1. Packages
+            const pkgs = JSON.parse(localStorage.getItem('karuthal_packages') || '[]');
+            let pkgHtml = '';
+            pkgs.forEach((p, idx) => {
+                pkgHtml += `<div class="p-2.5 bg-slate-50 border rounded-xl flex justify-between items-center">
+                    <div><strong>${p.name}</strong> - <span class="text-emerald-700 font-bold">₹${p.price || p.displayPrice}</span></div>
+                    <button onclick="deleteAdminPkg(${idx})" class="text-red-500 font-bold hover:underline">Delete</button>
+                </div>`;
+            });
+            document.getElementById('adminPackagesList').innerHTML = pkgHtml || '<p class="text-slate-400">No packages found.</p>';
 
-            if (type === 'driver') {
-                const drivers = JSON.parse(localStorage.getItem('karuthal_drivers') || '[]');
-                drivers.push({ id: 'DRV-' + Date.now().toString().slice(-4), name, phone, pass });
-                localStorage.setItem('karuthal_drivers', JSON.stringify(drivers));
-                showToast("New Driver Account Created Successfully!");
-            } else {
-                const staff = JSON.parse(localStorage.getItem('karuthal_staff') || '[]');
-                staff.push({ id: 'STF-' + Date.now().toString().slice(-4), name, phone, role: 'Care Coordinator', pass });
-                localStorage.setItem('karuthal_staff', JSON.stringify(staff));
-                showToast("New Staff Account Created Successfully!");
-            }
-            loadAllRegisteredAccountsRoute();
-        }
-
-        function loadAllRegisteredAccountsRoute() {
+            // 2. Staff & Drivers
             const drivers = JSON.parse(localStorage.getItem('karuthal_drivers') || '[]');
             const staff = JSON.parse(localStorage.getItem('karuthal_staff') || '[]');
+            let staffHtml = '';
+            drivers.forEach(d => { staffHtml += `<div class="p-2 bg-slate-50 border rounded-xl">[Driver] ${d.name} (${d.phone})</div>`; });
+            staff.forEach(s => { staffHtml += `<div class="p-2 bg-slate-50 border rounded-xl">[Staff] ${s.name} (${s.phone})</div>`; });
+            document.getElementById('adminStaffDriversList').innerHTML = staffHtml || '<p class="text-slate-400">No staff/drivers found.</p>';
+
+            // 3. Customers & Patients
+            const customers = JSON.parse(localStorage.getItem('karuthal_customers') || '[]');
+            const parents = JSON.parse(localStorage.getItem('karuthal_parents') || '[]');
             
-            let html = '';
-            drivers.forEach(d => {
-                html += `<div class="p-3 bg-slate-50 rounded-xl border flex justify-between items-center text-xs mb-2">
-                    <div><strong>[Driver] ${d.name}</strong> (${d.phone})</div>
-                    <span class="text-emerald-600 font-bold">${d.id}</span>
-                </div>`;
-            });
-            staff.forEach(s => {
-                html += `<div class="p-3 bg-slate-50 rounded-xl border flex justify-between items-center text-xs mb-2">
-                    <div><strong>[Staff] ${s.name}</strong> (${s.phone})</div>
-                    <span class="text-blue-600 font-bold">${s.id}</span>
-                </div>`;
-            });
-            
-            const container = document.getElementById('adminAccountsListContainer');
-            if (container) {
-                container.innerHTML = html || '<p class="text-xs text-slate-400">No custom accounts added yet.</p>';
-            }
+            let custHtml = '';
+            customers.forEach(c => { custHtml += `<div class="p-2 bg-slate-50 border rounded-xl"><strong>${c.name}</strong><br>${c.phone}</div>`; });
+            document.getElementById('adminCustomersList').innerHTML = custHtml || '<p class="text-slate-400">No registered customers.</p>';
+
+            let patHtml = '';
+            parents.forEach(p => { patHtml += `<div class="p-2 bg-emerald-50/50 border border-emerald-100 rounded-xl"><strong>${p.name}</strong> (${p.ageGender})<br>Cond: ${p.medical}</div>`; });
+            document.getElementById('adminPatientsList').innerHTML = patHtml || '<p class="text-slate-400">No senior profiles added.</p>';
         }
 
-        function initDriverMap(lat = 10.0159, lng = 76.3419) {
-            const mapEl = document.getElementById('driverLiveMap');
-            if (mapEl) {
-                if (!driverMapInstance) {
-                    driverMapInstance = L.map('driverLiveMap').setView([lat, lng], 14);
-                    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-                        maxZoom: 19,
-                        attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
-                    }).addTo(driverMapInstance);
-                    driverMarkerInstance = L.marker([lat, lng]).addTo(driverMapInstance).bindPopup("Your Position").openPopup();
-                } else {
-                    driverMapInstance.setView([lat, lng]);
-                }
+        function adminSavePackage() {
+            const name = document.getElementById('adminPkgName').value.trim();
+            const price = parseFloat(document.getElementById('adminPkgPrice').value);
+            const id = document.getElementById('adminPkgId').value.trim() || ('PKG-' + Date.now().toString().slice(-4));
+            const desc = document.getElementById('adminPkgDesc').value.trim();
+
+            if (!name || isNaN(price)) {
+                showToast("Please enter valid package name and price.", "error");
+                return;
             }
+
+            const pkgs = JSON.parse(localStorage.getItem('karuthal_packages') || '[]');
+            pkgs.push({ id, name, price, displayPrice: `₹${price.toLocaleString()} / mo`, desc });
+            localStorage.setItem('karuthal_packages', JSON.stringify(pkgs));
+
+            document.getElementById('adminPkgName').value = '';
+            document.getElementById('adminPkgPrice').value = '';
+            document.getElementById('adminPkgId').value = '';
+            document.getElementById('adminPkgDesc').value = '';
+
+            loadAdminDataViews();
+            showToast("Package saved successfully!");
         }
 
-        function startLiveGPSBroadcast() {
-            if (navigator.geolocation) {
-                showToast("GPS Broadcasting Activated!");
-                document.getElementById('gpsStatusBadge').innerText = "Broadcasting Live";
-                document.getElementById('gpsStatusBadge').className = "bg-emerald-500 text-slate-900 px-2.5 py-0.5 rounded text-[10px] font-bold animate-pulse";
+        function deleteAdminPkg(idx) {
+            let pkgs = JSON.parse(localStorage.getItem('karuthal_packages') || '[]');
+            pkgs.splice(idx, 1);
+            localStorage.setItem('karuthal_packages', JSON.stringify(pkgs));
+            loadAdminDataViews();
+            showToast("Package removed.");
+        }
 
-                watchId = navigator.geolocation.watchPosition((pos) => {
-                    const lat = pos.coords.latitude;
-                    const lng = pos.coords.longitude;
-                    
-                    localStorage.setItem('karuthal_live_location', JSON.stringify({ lat, lng, time: new Date().toLocaleTimeString() }));
+        function adminCreateAccount() {
+            const type = document.getElementById('admAccType').value;
+            const name = document.getElementById('admAccName').value.trim();
+            const phone = document.getElementById('admAccPhone').value.trim();
+            const pass = document.getElementById('admAccPass').value.trim();
 
-                    if (driverMapInstance && driverMarkerInstance) {
-                        driverMarkerInstance.setLatLng([lat, lng]);
-                        driverMapInstance.setView([lat, lng]);
-                    }
-                }, () => showToast("GPS Error", "error"), { enableHighAccuracy: true });
+            if (!name || !phone) {
+                showToast("Please fill name and phone number.", "error");
+                return;
+            }
+
+            if (type === 'driver') {
+                const drvs = JSON.parse(localStorage.getItem('karuthal_drivers') || '[]');
+                drvs.push({ id: 'DRV-' + Date.now().toString().slice(-4), name, phone, pass });
+                localStorage.setItem('karuthal_drivers', JSON.stringify(drvs));
             } else {
-                showToast("Geolocation not supported.", "error");
+                const stfs = JSON.parse(localStorage.getItem('karuthal_staff') || '[]');
+                stfs.push({ id: 'STF-' + Date.now().toString().slice(-4), name, phone, role: 'Coordinator', pass });
+                localStorage.setItem('karuthal_staff', JSON.stringify(stfs));
+            }
+
+            document.getElementById('admAccName').value = '';
+            document.getElementById('admAccPhone').value = '';
+            loadAdminDataViews();
+            showToast("New account authorized successfully!");
+        }
+
+        function initAdminMap(lat = 10.0159, lng = 76.3419) {
+            const el = document.getElementById('adminLiveMap');
+            if (el && !adminMapInstance) {
+                adminMapInstance = L.map('adminLiveMap').setView([lat, lng], 13);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(adminMapInstance);
+                adminMarkerInstance = L.marker([lat, lng]).addTo(adminMapInstance).bindPopup("Driver Last Location").openPopup();
             }
         }
 
-        async function toggleStaffVideoStream() {
-            const videoElem = document.getElementById('staffWebcamFeed');
-            const placeholder = document.getElementById('camPlaceholder');
-            const liveBadge = document.getElementById('liveBadge');
-            const btnText = document.getElementById('camBtnText');
+        async function toggleAdminStream() {
+            const video = document.getElementById('adminWebcamFeed');
+            const placeholder = document.getElementById('adminCamPlaceholder');
+            const btn = document.getElementById('adminCamBtn');
 
-            if (!mediaStreamObj) {
+            if (!adminMediaStream) {
                 try {
-                    mediaStreamObj = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                    videoElem.srcObject = mediaStreamObj;
-                    videoElem.classList.remove('hidden');
+                    adminMediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                    video.srcObject = adminMediaStream;
+                    video.classList.remove('hidden');
                     placeholder.classList.add('hidden');
-                    liveBadge.classList.remove('hidden');
-                    btnText.innerText = "Stop Camera Stream";
-                    showToast("Staff medical video stream initiated!");
-                } catch (err) {
-                    showToast("Camera access failed.", "error");
+                    btn.innerText = "Stop Stream";
+                    showToast("Admin live feed started.");
+                } catch (e) {
+                    showToast("Camera error.", "error");
                 }
             } else {
-                mediaStreamObj.getTracks().forEach(track => track.stop());
-                mediaStreamObj = null;
-                videoElem.classList.add('hidden');
+                adminMediaStream.getTracks().forEach(t => t.stop());
+                adminMediaStream = null;
+                video.classList.add('hidden');
                 placeholder.classList.remove('hidden');
-                liveBadge.classList.add('hidden');
-                btnText.innerText = "Start Camera Stream";
-                showToast("Stream stopped.");
+                btn.innerText = "Start Camera Feed";
+                showToast("Feed stopped.");
             }
+        }
+
+        function exportSystemData() {
+            const data = {
+                packages: JSON.parse(localStorage.getItem('karuthal_packages') || '[]'),
+                customers: JSON.parse(localStorage.getItem('karuthal_customers') || '[]'),
+                parents: JSON.parse(localStorage.getItem('karuthal_parents') || '[]'),
+                drivers: JSON.parse(localStorage.getItem('karuthal_drivers') || '[]')
+            };
+            console.log("Karuthal System Data:", data);
+            showToast("System data exported to console!");
         }
     </script>
 </body>
