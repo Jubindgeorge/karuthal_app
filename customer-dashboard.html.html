@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- jsPDF Library for Real PDF Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
@@ -31,12 +30,6 @@
     <!-- MAIN CONTAINER -->
     <main class="max-w-5xl w-full mx-auto p-6 flex-grow space-y-6">
 
-        <!-- TOAST NOTIFICATION -->
-        <div id="toastNotification" class="hidden bg-slate-900 text-white text-xs px-4 py-3 rounded-2xl shadow-lg fixed bottom-6 right-6 z-50 flex items-center gap-3 animate-bounce">
-            <i class="fa-solid fa-circle-info text-emerald-400"></i>
-            <span id="toastText">Notification</span>
-        </div>
-
         <!-- WELCOME BANNER -->
         <div class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white rounded-3xl p-6 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div class="space-y-1">
@@ -49,7 +42,7 @@
             </button>
         </div>
 
-        <!-- NEW USER / EXISTING USER PACKAGE SELECTION SECTION -->
+        <!-- PACKAGE SELECTION SECTION (Synced Exactly with index.html) -->
         <div class="bg-white rounded-3xl border p-6 space-y-4 shadow-sm">
             <div class="border-b pb-3 flex justify-between items-center">
                 <div>
@@ -77,7 +70,7 @@
                     </div>
                 </div>
 
-                <!-- Package 2 -->
+                <!-- Package 2 (Most Popular) -->
                 <div class="bg-emerald-50/60 border-2 border-emerald-500 rounded-2xl p-4 flex flex-col justify-between space-y-3 shadow-sm relative">
                     <span class="absolute -top-2.5 right-4 bg-emerald-600 text-white font-bold text-[9px] px-2.5 py-0.5 rounded-full uppercase tracking-wider">Most Popular</span>
                     <div>
@@ -122,7 +115,7 @@
             <!-- LEFT & CENTER COLUMNS -->
             <div class="lg:col-span-2 space-y-6">
 
-                <!-- 1. PARENTS & ELDERLY EXTENDED FULL PROFILE MANAGEMENT -->
+                <!-- PARENTS & ELDERLY PROFILE MANAGEMENT -->
                 <div class="bg-white rounded-3xl border p-6 space-y-4 shadow-sm">
                     <div class="flex justify-between items-center border-b pb-3">
                         <div>
@@ -177,7 +170,7 @@
                     <div id="parentListContainer" class="space-y-3 pt-2"></div>
                 </div>
 
-                <!-- 2. REAL-TIME RIDE & SERVICE STATUS TRACKER -->
+                <!-- REAL-TIME RIDE & SERVICE STATUS TRACKER -->
                 <div class="bg-white rounded-3xl border p-6 space-y-4 shadow-sm">
                     <div class="flex justify-between items-center border-b pb-3">
                         <h3 class="font-extrabold text-slate-900 text-base flex items-center gap-2">
@@ -204,7 +197,7 @@
                     <div id="clientTrackingMap" class="w-full h-64 rounded-2xl border z-0"></div>
                 </div>
 
-                <!-- 3. REAL PDF REPORTS & INVOICES GENERATOR -->
+                <!-- REAL PDF REPORTS & INVOICES GENERATOR -->
                 <div class="bg-white rounded-3xl border p-6 space-y-4 shadow-sm">
                     <h3 class="font-extrabold text-slate-900 text-base">Monthly Health Checkup Reports & Invoices</h3>
                     <p class="text-xs text-slate-500">Download past medical summaries, lab test reports, and billing receipts as actual PDFs.</p>
@@ -231,7 +224,7 @@
             <!-- RIGHT COLUMN (CHAT & REMINDERS) -->
             <div class="space-y-6">
 
-                <!-- 4. DEDICATED CARE COORDINATOR CHAT -->
+                <!-- CARE COORDINATOR CHAT -->
                 <div class="bg-white rounded-3xl border p-6 space-y-4 shadow-sm flex flex-col h-[400px]">
                     <div class="border-b pb-3">
                         <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
@@ -253,7 +246,7 @@
                     </div>
                 </div>
 
-                <!-- 5. MEDICATION & APPOINTMENT REMINDERS -->
+                <!-- MEDICATION & APPOINTMENT REMINDERS -->
                 <div class="bg-white rounded-3xl border p-6 space-y-3 shadow-sm">
                     <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
                         <i class="fa-solid fa-bell text-amber-500"></i> Medication & Reminders
@@ -288,10 +281,12 @@
     </footer>
 
     <!-- SCRIPT LOGIC -->
+    <script src="app.js"></script>
     <script>
         let mapInstance = null, markerInstance = null;
 
         window.onload = function() {
+            initStorage();
             loadParentProfiles();
             loadActivePackage();
             setTimeout(() => {
@@ -309,7 +304,7 @@
         function loadActivePackage() {
             const plan = JSON.parse(localStorage.getItem('karuthal_active_package') || 'null');
             const badge = document.getElementById('activePlanBadge');
-            if (plan) {
+            if (plan && badge) {
                 badge.innerText = `Active Plan: ${plan.name} (${plan.price})`;
                 badge.className = "bg-emerald-500 text-slate-900 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider";
             }
@@ -331,7 +326,7 @@
             const address = document.getElementById('parentAddressInput').value.trim();
 
             if (!name || !phone || !address) {
-                showToast("Please fill all required parent details (Name, Phone, Address).");
+                showToast("Please fill all required parent details (Name, Phone, Address).", "error");
                 return;
             }
 
@@ -350,6 +345,7 @@
         function loadParentProfiles() {
             const parents = JSON.parse(localStorage.getItem('karuthal_parents') || '[]');
             const container = document.getElementById('parentListContainer');
+            if (!container) return;
             
             if (parents.length === 0) {
                 container.innerHTML = `<div class="p-4 bg-slate-50 border rounded-2xl text-center text-xs text-slate-400">No parent or senior full profiles added yet. Click '+ Add Full Profile' above.</div>`;
@@ -386,13 +382,17 @@
 
         function initCustomerMap(lat = 10.0159, lng = 76.3419) {
             const mapEl = document.getElementById('clientTrackingMap');
-            if (mapEl && !mapInstance) {
-                mapInstance = L.map('clientTrackingMap').setView([lat, lng], 14);
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-                    maxZoom: 19,
-                    attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
-                }).addTo(mapInstance);
-                markerInstance = L.marker([lat, lng]).addTo(mapInstance).bindPopup("Cab Current Location").openPopup();
+            if (mapEl) {
+                if (!mapInstance) {
+                    mapInstance = L.map('clientTrackingMap').setView([lat, lng], 14);
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                        maxZoom: 19,
+                        attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+                    }).addTo(mapInstance);
+                    markerInstance = L.marker([lat, lng]).addTo(mapInstance).bindPopup("Cab Current Location").openPopup();
+                } else {
+                    mapInstance.setView([lat, lng]);
+                }
             }
         }
 
@@ -402,9 +402,13 @@
                 if (data && mapInstance && markerInstance) {
                     markerInstance.setLatLng([data.lat, data.lng]);
                     mapInstance.setView([data.lat, data.lng]);
-                    document.getElementById('liveSyncStatus').innerText = "LIVE Tracking Active";
-                    document.getElementById('liveSyncStatus').className = "bg-emerald-500 text-slate-900 text-[10px] font-bold px-2.5 py-1 rounded-full animate-pulse";
-                    document.getElementById('lastGpsUpdateText').innerText = "Last sync: " + data.time;
+                    const statusEl = document.getElementById('liveSyncStatus');
+                    const updateEl = document.getElementById('lastGpsUpdateText');
+                    if (statusEl) {
+                        statusEl.innerText = "LIVE Tracking Active";
+                        statusEl.className = "bg-emerald-500 text-slate-900 text-[10px] font-bold px-2.5 py-1 rounded-full animate-pulse";
+                    }
+                    if (updateEl) updateEl.innerText = "Last sync: " + data.time;
                 }
             }, 3000);
         }
@@ -442,6 +446,7 @@
 
         function sendChatMessage() {
             const input = document.getElementById('chatInputMsg');
+            if (!input) return;
             const msg = input.value.trim();
             if (!msg) return;
 
@@ -463,19 +468,12 @@
         }
 
         function triggerEmergencySOS() {
-            showToast("🚨 EMERGENCY SOS BROADCASTED TO EMERGENCY DISPATCH!");
+            showToast("🚨 EMERGENCY SOS BROADCASTED TO EMERGENCY DISPATCH!", "error");
         }
 
         function logoutCustomer() {
             showToast("Logged out from Customer Hub.");
             setTimeout(() => { location.href = 'portal.html'; }, 1000);
-        }
-
-        function showToast(message) {
-            const toast = document.getElementById('toastNotification');
-            document.getElementById('toastText').innerText = message;
-            toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('hidden'), 3000);
         }
     </script>
 </body>
