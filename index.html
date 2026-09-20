@@ -1,294 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Karuthal - Senior Care & Companion Travel Services</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Karuthal - Senior Care & Family Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col justify-between">
 
-    <!-- HEADER -->
-    <header class="bg-white/90 backdrop-blur border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
-            <div class="flex items-center space-x-3 cursor-pointer" onclick="location.href='index.html'">
-                <div class="bg-emerald-600 text-white p-3 rounded-2xl shadow-md"><i class="fa-solid fa-hand-holding-heart text-2xl"></i></div>
-                <div>
-                    <h1 class="text-2xl font-black text-slate-900 tracking-tight">KARUTHAL</h1>
-                    <p class="text-[11px] text-slate-500 font-medium">Senior Care & Companion Travel Services</p>
-                </div>
-            </div>
-            <nav class="hidden md:flex space-x-6 text-sm font-semibold items-center">
-                <a href="index.html" class="text-emerald-700 font-bold border-b-2 border-emerald-600 pb-1">Home</a>
-                <a href="#packagesSection" class="hover:text-emerald-600 transition">Care Packages</a>
-                <a href="#customPackageSection" class="hover:text-emerald-600 transition">Custom Builder</a>
-                <a href="#taxiSection" class="hover:text-emerald-600 transition">Taxi Calculator</a>
-                <a href="customer-dashboard.html" class="bg-slate-900 text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-emerald-600 transition shadow-md">Customer Hub</a>
-            </nav>
-        </div>
-    </header>
+  <!-- NAVBAR -->
+  <header class="bg-white border-b sticky top-0 z-50 px-6 py-4 flex justify-between items-center shadow-sm">
+    <div class="flex items-center gap-3 cursor-pointer" onclick="location.href='index.html'">
+      <div class="bg-emerald-600 text-white w-10 h-10 rounded-2xl flex items-center justify-center font-black text-lg shadow-md">K</div>
+      <div>
+        <h1 class="font-extrabold text-slate-900 leading-none text-base">Karuthal</h1>
+        <span class="text-[11px] text-emerald-600 font-bold">Compassionate Senior Care</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <a href="customer-login.html" class="px-4 py-2 text-xs font-bold text-slate-700 hover:text-emerald-600 transition">Customer Login</a>
+      <a href="customer-login.html" class="px-4 py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow transition">Get Started</a>
+    </div>
+  </header>
 
-    <main class="flex-grow max-w-7xl w-full mx-auto p-6 space-y-12">
-        <!-- HERO SECTION -->
-        <div class="relative rounded-3xl bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white p-8 md:p-14 shadow-2xl overflow-hidden">
-            <div class="absolute right-0 top-0 w-1/3 h-full bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="max-w-2xl space-y-5 relative z-10">
-                <span id="activePlanBadgeHeader" class="bg-emerald-500/20 text-emerald-300 text-xs uppercase tracking-widest font-extrabold px-3.5 py-1.5 rounded-full inline-block border border-emerald-400/30">Trusted Elderly Companion Care</span>
-                <h2 class="text-3xl md:text-5xl font-black leading-tight tracking-tight">Comfort, Dignity & Peace of Mind for Your Loved Ones.</h2>
-                <p class="text-slate-300 text-sm md:text-base leading-relaxed">Dedicated healthcare monitoring, hospital travel assistance, and secure family portals backed by professionals.</p>
-                <div class="pt-2 flex flex-wrap gap-4">
-                    <a href="customer-dashboard.html" class="bg-emerald-500 text-slate-950 font-black px-6 py-3.5 rounded-2xl text-xs hover:bg-emerald-400 transition shadow-lg">Open Customer Hub</a>
-                    <a href="#packagesSection" class="bg-white/10 hover:bg-white/20 text-white font-black px-6 py-3.5 rounded-2xl text-xs transition border border-white/20 shadow-lg">Explore Packages</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- MONTHLY CARE PACKAGES SECTION -->
-        <div id="packagesSection" class="space-y-6">
-            <div class="text-center max-w-xl mx-auto space-y-2">
-                <span class="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Subscription Plans</span>
-                <h3 class="text-2xl font-black text-slate-900">Karuthal Care Packages & Plans</h3>
-                <p class="text-slate-600 text-xs">Select or upgrade your subscription package to unlock services for your parents.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
-                <!-- Package 1 -->
-                <div class="bg-white border rounded-3xl p-6 flex flex-col justify-between space-y-4 hover:border-emerald-500 shadow-sm transition">
-                    <div class="space-y-3">
-                        <span class="bg-slate-200 text-slate-700 font-bold text-[10px] px-2.5 py-1 rounded-full uppercase">Basic Care</span>
-                        <h4 class="font-extrabold text-slate-900 text-base">Essential Support Plan</h4>
-                        <p class="text-slate-500 leading-relaxed">Ideal for occasional doctor visits and monthly checkup coordination.</p>
-                        <ul class="space-y-2 text-slate-700 pt-2 border-t">
-                            <li><i class="fa-solid fa-check text-emerald-600 mr-2"></i> 2 Monthly Medical Rides</li>
-                            <li><i class="fa-solid fa-check text-emerald-600 mr-2"></i> Coordinator Support</li>
-                            <li><i class="fa-solid fa-check text-emerald-600 mr-2"></i> Basic Health Logs</li>
-                        </ul>
-                    </div>
-                    <div class="pt-4 border-t flex items-center justify-between">
-                        <strong class="text-emerald-700 text-base font-black">₹1,499 <span class="text-xs text-slate-500 font-normal">/ mo</span></strong>
-                        <button onclick="selectPackage('Essential Support Plan', '₹1,499 / mo')" class="bg-slate-900 hover:bg-emerald-600 text-white font-bold px-4 py-2.5 rounded-xl transition shadow">Select Plan</button>
-                    </div>
-                </div>
-
-                <!-- Package 2 (Most Popular) -->
-                <div class="bg-emerald-50/60 border-2 border-emerald-500 rounded-3xl p-6 flex flex-col justify-between space-y-4 shadow-md relative">
-                    <span class="absolute -top-3 right-6 bg-emerald-600 text-white font-black text-[10px] px-3 py-1 rounded-full uppercase tracking-wider shadow">Most Popular</span>
-                    <div class="space-y-3">
-                        <span class="bg-emerald-200 text-emerald-800 font-bold text-[10px] px-2.5 py-1 rounded-full uppercase">Gold Care</span>
-                        <h4 class="font-extrabold text-slate-900 text-base">Senior Family Complete</h4>
-                        <p class="text-slate-600 leading-relaxed">Comprehensive monthly support for regular checkups and emergency coverage.</p>
-                        <ul class="space-y-2 text-slate-700 pt-2 border-t border-emerald-200">
-                            <li><i class="fa-solid fa-check text-emerald-600 mr-2"></i> 6 Monthly Medical Rides</li>
-                            <li><i class="fa-solid fa-check text-emerald-600 mr-2"></i> 24/7 Coordinator Assistance</li>
-                            <li><i class="fa-solid fa-check text-emerald-600 mr-2"></i> Medication & Vitals Tracking</li>
-                        </ul>
-                    </div>
-                    <div class="pt-4 border-t border-emerald-200 flex items-center justify-between">
-                        <strong class="text-emerald-700 text-base font-black">₹3,499 <span class="text-xs text-slate-500 font-normal">/ mo</span></strong>
-                        <button onclick="selectPackage('Senior Family Complete', '₹3,499 / mo')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl transition shadow">Select Plan</button>
-                    </div>
-                </div>
-
-                <!-- Package 3 -->
-                <div class="bg-white border rounded-3xl p-6 flex flex-col justify-between space-y-4 hover:border-emerald-500 shadow-sm transition">
-                    <div class="space-y-3">
-                        <span class="bg-slate-200 text-slate-700 font-bold text-[10px] px-2.5 py-1 rounded-full uppercase">Platinum Care</span>
-                        <h4 class="font-extrabold text-slate-900 text-base">VIP Total Health Guard</h4>
-                        <p class="text-slate-500 leading-relaxed">Unlimited dedicated support, priority transport, and complete family health records.</p>
-                        <ul class="space-y-2 text-slate-700 pt-2 border-t">
-                            <li><i class="fa-solid fa-check text-emerald-600 mr-2"></i> Unlimited Rides & Priority Booking</li>
-                            <li><i class="fa-solid fa-check text-emerald-600 mr-2"></i> Dedicated Care Attendant</li>
-                            <li><i class="fa-solid fa-check text-emerald-600 mr-2"></i> Emergency SOS Dispatch Ready</li>
-                        </ul>
-                    </div>
-                    <div class="pt-4 border-t flex items-center justify-between">
-                        <strong class="text-emerald-700 text-base font-black">₹6,999 <span class="text-xs text-slate-500 font-normal">/ mo</span></strong>
-                        <button onclick="selectPackage('VIP Total Health Guard', '₹6,999 / mo')" class="bg-slate-900 hover:bg-emerald-600 text-white font-bold px-4 py-2.5 rounded-xl transition shadow">Select Plan</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- CUSTOM PACKAGE BUILDER -->
-        <div id="customPackageSection" class="bg-white rounded-3xl border shadow-xl p-6 md:p-8 max-w-4xl mx-auto space-y-6">
-            <div class="border-b pb-4 flex justify-between items-center">
-                <div>
-                    <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-sliders text-emerald-600"></i> Custom Care Package Builder
-                    </h3>
-                    <p class="text-slate-500 text-xs">Tailor a unique monthly package according to your parent's exact health requirements.</p>
-                </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
-                <div class="space-y-4">
-                    <div>
-                        <label class="font-bold text-slate-700 block mb-1">Select Hospital Visits per Month</label>
-                        <select id="customVisits" onchange="calculateCustomPackage()" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
-                            <option value="500">2 Visits (₹500)</option>
-                            <option value="900">4 Visits (₹900)</option>
-                            <option value="1500">Weekly Visits - 8 Visits (₹1,500)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="font-bold text-slate-700 block mb-1">Nurse Home Checkups</label>
-                        <select id="customNurse" onchange="calculateCustomPackage()" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
-                            <option value="0">None</option>
-                            <option value="1500">Bi-weekly Nurse Checkup (₹1,500)</option>
-                            <option value="3000">Weekly Nurse Checkup (₹3,000)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="font-bold text-slate-700 block mb-1">Emergency 24/7 SOS Monitoring</label>
-                        <select id="customSos" onchange="calculateCustomPackage()" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
-                            <option value="1000">Included (₹1,000)</option>
-                            <option value="0">Not Required (₹0)</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-6 flex flex-col justify-between shadow-md">
-                    <div class="space-y-2">
-                        <div class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Custom Package Estimate</div>
-                        <div class="text-3xl font-black" id="customTotalCost">₹0</div>
-                        <p class="text-[11px] text-slate-300">Includes dedicated coordinator updates, medication tracking, and family portal access.</p>
-                    </div>
-                    <button onclick="bookCustomPackage()" class="mt-4 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-3 rounded-xl text-xs transition shadow">Subscribe Custom Package</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAXI FARE CALCULATOR -->
-        <div id="taxiSection" class="bg-white rounded-3xl border shadow-xl p-6 md:p-8 max-w-4xl mx-auto space-y-6">
-            <div class="border-b pb-4">
-                <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
-                    <i class="fa-solid fa-taxi text-emerald-600"></i> Senior-Friendly Taxi Fare Calculator
-                </h3>
-                <p class="text-slate-500 text-xs">Calculates automatically with companion assistance included.</p>
-            </div>
-
-            <form onsubmit="event.preventDefault(); openModal('taxiBookingModal');" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                <div>
-                    <label class="font-bold text-slate-700 block mb-1">Vehicle Type</label>
-                    <select id="vehicleType" onchange="calculateTaxiFare()" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
-                        <option value="hatchback_sedan">Hatchback / Sedan (Dzire, Etios)</option>
-                        <option value="suv">SUV (Innova, Scorpio)</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="font-bold text-slate-700 block mb-1">One-Way Map Distance (KM)</label>
-                    <input type="number" min="1" id="tripKm" value="15" oninput="calculateTaxiFare()" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
-                </div>
-                <div>
-                    <label class="font-bold text-slate-700 block mb-1">Pickup Address</label>
-                    <input type="text" id="pickupAddr" value="Kakkanad, Kochi" required class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
-                </div>
-                <div>
-                    <label class="font-bold text-slate-700 block mb-1">Destination Hospital / Drop Address</label>
-                    <input type="text" id="dropAddr" value="Amrita Hospital, Edappally" required class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
-                </div>
-                <div class="md:col-span-2 pt-2">
-                    <div class="bg-slate-50 rounded-2xl p-4 border flex justify-between items-center">
-                        <div>
-                            <div class="text-[10px] font-bold text-slate-500 uppercase">Estimated Total Fare</div>
-                            <div class="text-2xl font-black text-emerald-700" id="calculatedFare">₹0</div>
-                        </div>
-                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-6 py-3 rounded-xl text-xs transition shadow">Confirm & Book Taxi</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </main>
-
-    <!-- TAXI BOOKING MODAL -->
-    <div id="taxiBookingModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-        <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl border text-xs">
-            <h3 class="text-lg font-black text-slate-900">Complete Taxi Booking</h3>
-            <form onsubmit="event.preventDefault(); submitTaxiBooking();" class="space-y-3">
-                <div>
-                    <label class="font-bold text-slate-700 block mb-1">Passenger / Senior Name *</label>
-                    <input type="text" id="tbPassengerName" value="K. P. Menon" required class="w-full px-3.5 py-2.5 border rounded-xl">
-                </div>
-                <div>
-                    <label class="font-bold text-slate-700 block mb-1">Contact Phone *</label>
-                    <input type="tel" id="tbPhone" value="9846011223" required class="w-full px-3.5 py-2.5 border rounded-xl">
-                </div>
-                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 rounded-xl text-sm shadow">Submit Booking</button>
-            </form>
-        </div>
+  <!-- HERO SECTION -->
+  <main class="max-w-5xl mx-auto px-6 py-12 space-y-12">
+    <div class="text-center space-y-4 max-w-2xl mx-auto">
+      <span class="bg-emerald-100 text-emerald-800 text-xs font-black px-3.5 py-1.5 rounded-full uppercase tracking-wider">Dedicated Elderly Support</span>
+      <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight">Complete Health & Transport Care for Your Parents</h2>
+      <p class="text-xs md:text-sm text-slate-600">
+        Karuthal helps you coordinate medical visits, daily medication schedules, dedicated cab drivers, and live updates for your loved ones.
+      </p>
+      <div class="pt-2 flex justify-center gap-4">
+        <a href="customer-login.html" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-6 py-3 rounded-2xl text-xs shadow-lg transition">Access Customer Portal</a>
+      </div>
     </div>
 
-    <!-- FOOTER -->
-    <footer class="text-center py-8 text-xs text-slate-500 border-t bg-white mt-12">
-        <p>&copy; 2026 Karuthal Senior Care Services. All rights reserved. Cloud & GPS Connected.</p>
-    </footer>
+    <!-- FEATURES GRID -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+      <div class="bg-white p-6 rounded-3xl border shadow-sm space-y-2">
+        <div class="bg-emerald-50 text-emerald-600 w-10 h-10 rounded-xl flex items-center justify-center font-bold text-base mb-3"><i class="fa-solid fa-car"></i></div>
+        <h3 class="font-bold text-slate-900 text-sm">Safe Assisted Transport</h3>
+        <p class="text-slate-500">Verified cab drivers equipped to transport seniors safely to clinics and appointments.</p>
+      </div>
+      <div class="bg-white p-6 rounded-3xl border shadow-sm space-y-2">
+        <div class="bg-emerald-50 text-emerald-600 w-10 h-10 rounded-xl flex items-center justify-center font-bold text-base mb-3"><i class="fa-solid fa-heart-pulse"></i></div>
+        <h3 class="font-bold text-slate-900 text-sm">Health & Vitals Tracking</h3>
+        <p class="text-slate-500">Regular checkup summaries, medical history logs, and instant report downloads.</p>
+      </div>
+      <div class="bg-white p-6 rounded-3xl border shadow-sm space-y-2">
+        <div class="bg-emerald-50 text-emerald-600 w-10 h-10 rounded-xl flex items-center justify-center font-bold text-base mb-3"><i class="fa-solid fa-bell"></i></div>
+        <h3 class="font-bold text-slate-900 text-sm">Real-time Emergency SOS</h3>
+        <p class="text-slate-500">Instant notification system and live support coordinator access for urgent situations.</p>
+      </div>
+    </div>
+  </main>
 
-    <script src="app.js"></script>
-    <script>
-        window.onload = function() {
-            initStorage();
-            loadActivePackage();
-            calculateCustomPackage();
-            calculateTaxiFare();
-        };
+  <!-- FOOTER -->
+  <footer class="text-center py-6 text-xs text-slate-400 border-t bg-white">
+    &copy; 2026 Karuthal Project. All rights reserved.
+  </footer>
 
-        function selectPackage(packageName, price) {
-            localStorage.setItem('karuthal_pending_package', JSON.stringify({ name: packageName, price: price, date: new Date().toLocaleDateString() }));
-            
-            // Check if customer is logged in via customer login
-            const custSession = JSON.parse(localStorage.getItem('karuthal_customer_session') || 'null');
-            
-            if (!custSession) {
-                showToast("Please login or create a customer account first.", "error");
-                setTimeout(() => { location.href = 'customer-login.html'; }, 1200);
-            } else {
-                localStorage.setItem('karuthal_active_package', JSON.stringify({ name: packageName, price: price, date: new Date().toLocaleDateString() }));
-                showToast(`Successfully subscribed to ${packageName}! Redirecting to Customer Hub...`);
-                setTimeout(() => { location.href = 'customer-dashboard.html'; }, 1200);
-            }
-        }
-
-        function loadActivePackage() {
-            const plan = JSON.parse(localStorage.getItem('karuthal_active_package') || 'null');
-            const badge = document.getElementById('activePlanBadgeHeader');
-            if (plan && badge) {
-                badge.innerText = `Active Plan: ${plan.name} (${plan.price})`;
-                badge.className = "bg-emerald-500/20 text-emerald-300 text-xs uppercase tracking-widest font-extrabold px-3.5 py-1.5 rounded-full inline-block border border-emerald-400/30";
-            }
-        }
-
-        function calculateCustomPackage() {
-            const v = parseInt(document.getElementById('customVisits').value) || 0;
-            const n = parseInt(document.getElementById('customNurse').value) || 0;
-            const s = parseInt(document.getElementById('customSos').value) || 0;
-            const total = v + n + s;
-            const totalEl = document.getElementById('customTotalCost');
-            if (totalEl) totalEl.innerText = `₹${total.toLocaleString('en-IN')}`;
-            return total;
-        }
-
-        function bookCustomPackage() {
-            const cost = calculateCustomPackage();
-            selectPackage('Custom Care Package', `₹${cost.toLocaleString('en-IN')} / mo`);
-        }
-
-        function calculateTaxiFare() {
-            const v = document.getElementById('vehicleType').value;
-            const km = parseFloat(document.getElementById('tripKm').value) || 0;
-            const config = RATES_CONFIG[v];
-            const totalKm = (km * 2) + 6;
-            const grandTotal = Math.max(config.minTariff, totalKm * config.perKmRate);
-            const fareEl = document.getElementById('calculatedFare');
-            if (fareEl) fareEl.innerText = `₹${grandTotal.toLocaleString('en-IN')}`;
-            return grandTotal;
-        }
-
-        function submitTaxiBooking() {
-            closeModal('taxiBookingModal');
-            showToast('Booking Confirmed! Redirecting to Customer Hub...');
-            setTimeout(() => { location.href = 'customer-dashboard.html'; }, 1000);
-        }
-    </script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>
