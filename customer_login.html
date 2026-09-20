@@ -93,11 +93,25 @@
                 localStorage.setItem('karuthal_customers', JSON.stringify(customers));
                 
                 localStorage.setItem('karuthal_customer_session', JSON.stringify({ name: fullName, identifier }));
+                
+                // If a package was pending selection, activate it now
+                const pendingPkg = JSON.parse(localStorage.getItem('karuthal_pending_package') || 'null');
+                if (pendingPkg) {
+                    localStorage.setItem('karuthal_active_package', JSON.stringify(pendingPkg));
+                    localStorage.removeItem('karuthal_pending_package');
+                }
+
                 showToast("Account created successfully!");
                 setTimeout(() => { location.href = 'customer-dashboard.html'; }, 1000);
             } else {
-                // Login check
                 localStorage.setItem('karuthal_customer_session', JSON.stringify({ identifier }));
+                
+                const pendingPkg = JSON.parse(localStorage.getItem('karuthal_pending_package') || 'null');
+                if (pendingPkg) {
+                    localStorage.setItem('karuthal_active_package', JSON.stringify(pendingPkg));
+                    localStorage.removeItem('karuthal_pending_package');
+                }
+
                 showToast("Login successful!");
                 setTimeout(() => { location.href = 'customer-dashboard.html'; }, 1000);
             }
