@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Karuthal - Secure Portal Access</title>
+    <title>Karuthal - Staff & Driver Secure Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -16,24 +16,18 @@
         <div class="flex items-center gap-3 cursor-pointer" onclick="location.href='portal.html'">
             <div class="bg-emerald-600 text-white w-10 h-10 rounded-2xl flex items-center justify-center font-black text-lg shadow-md">K</div>
             <div>
-                <h1 class="font-extrabold text-slate-900 leading-none text-base">Karuthal Secure Portal</h1>
-                <span class="text-[11px] text-emerald-600 font-bold">Encrypted & Role-Protected</span>
+                <h1 class="font-extrabold text-slate-900 leading-none text-base">Karuthal Staff & Driver Portal</h1>
+                <span class="text-[11px] text-emerald-600 font-bold">Authorized Personnel Only</span>
             </div>
         </div>
         <div class="flex items-center gap-2">
-            <button onclick="location.href='customer-dashboard.html'" class="px-3.5 py-1.5 text-xs font-bold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl transition">Customer Hub</button>
+            <button onclick="location.href='index.html'" class="px-3.5 py-1.5 text-xs font-bold bg-slate-100 hover:bg-slate-200 rounded-xl transition">Home</button>
             <button id="logoutBtn" onclick="logoutUser()" class="hidden px-3.5 py-1.5 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 rounded-xl transition"><i class="fa-solid fa-power-off"></i> Logout</button>
         </div>
     </header>
 
     <!-- MAIN CONTAINER -->
     <main class="max-w-4xl w-full mx-auto p-6 flex-grow space-y-6 flex flex-col items-center justify-center">
-
-        <!-- TOAST NOTIFICATION -->
-        <div id="toastNotification" class="hidden bg-slate-900 text-white text-xs px-4 py-3 rounded-2xl shadow-lg fixed bottom-6 right-6 z-50 flex items-center gap-3 animate-bounce">
-            <i class="fa-solid fa-circle-info text-emerald-400"></i>
-            <span id="toastText">Notification</span>
-        </div>
 
         <!-- AUTH LOGIN SCREEN -->
         <div id="authLoginView" class="max-w-md w-full bg-white rounded-3xl border p-8 space-y-6 shadow-xl my-8">
@@ -47,8 +41,8 @@
 
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Email Address *</label>
-                    <input type="email" id="loginEmail" placeholder="admin@karuthal.app / driver@karuthal.app" class="w-full bg-slate-50 border rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-emerald-600">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Email / ID *</label>
+                    <input type="text" id="loginEmail" placeholder="admin@karuthal.app / driver@karuthal.app" class="w-full bg-slate-50 border rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-emerald-600">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Password *</label>
@@ -56,8 +50,9 @@
                 </div>
 
                 <button onclick="handleAuthAction()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3.5 rounded-xl shadow transition text-xs">Sign In to Portal</button>
-                <div class="text-center pt-2">
-                    <a href="customer-dashboard.html" class="text-xs text-emerald-600 hover:underline font-bold">Go to Customer & Family Hub &rarr;</a>
+                
+                <div class="text-center pt-2 border-t text-xs text-slate-500">
+                    Are you a customer? <a href="customer-login.html" class="text-emerald-600 hover:underline font-bold">Go to Customer Login &rarr;</a>
                 </div>
             </div>
         </div>
@@ -161,14 +156,22 @@
     </footer>
 
     <!-- SCRIPT LOGIC -->
+    <script src="app.js"></script>
     <script>
         let driverMapInstance = null, driverMarkerInstance = null;
         let mediaStreamObj = null;
         let watchId = null;
 
         window.onload = function() {
+            initStorage();
             checkExistingSession();
         };
+
+        window.addEventListener('beforeunload', () => {
+            if (mediaStreamObj) {
+                mediaStreamObj.getTracks().forEach(track => track.stop());
+            }
+        });
 
         function checkExistingSession() {
             const session = JSON.parse(localStorage.getItem('karuthal_session') || 'null');
@@ -186,7 +189,14 @@
             const password = document.getElementById('loginPassword').value.trim();
 
             if (!email || !password) {
-                showToast("Please enter email and password.");
+                showToast("Please enter email and password.", "error");
+                return;
+            }
+
+            // Strictly restrict customer logins from this portal
+            if (email.toLowerCase().includes('customer') || !email.includes('admin') && !email.includes('staff') && !email.includes('driver')) {
+                showToast("Customers cannot login here. Please use Customer Login.", "error");
+                setTimeout(() => { location.href = 'customer-login.html'; }, 1500);
                 return;
             }
 
@@ -197,8 +207,7 @@
                 localStorage.setItem('karuthal_session', JSON.stringify({ email, role: 'driver' }));
                 revealDriverDashboard();
             } else {
-                showToast("For customer login, please use Customer Hub.");
-                setTimeout(() => location.href = 'customer-dashboard.html', 1500);
+                showToast("Invalid staff or driver credentials.", "error");
             }
         }
 
@@ -224,6 +233,10 @@
         function logoutUser() {
             localStorage.removeItem('karuthal_session');
             if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+            if (mediaStreamObj) {
+                mediaStreamObj.getTracks().forEach(track => track.stop());
+                mediaStreamObj = null;
+            }
             document.getElementById('portalDashboardWrapper').classList.add('hidden');
             document.getElementById('driverPortalView').classList.add('hidden');
             document.getElementById('staffPortalView').classList.add('hidden');
@@ -279,13 +292,17 @@
 
         function initDriverMap(lat = 10.0159, lng = 76.3419) {
             const mapEl = document.getElementById('driverLiveMap');
-            if (mapEl && !driverMapInstance) {
-                driverMapInstance = L.map('driverLiveMap').setView([lat, lng], 14);
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-                    maxZoom: 19,
-                    attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
-                }).addTo(driverMapInstance);
-                driverMarkerInstance = L.marker([lat, lng]).addTo(driverMapInstance).bindPopup("Your Position").openPopup();
+            if (mapEl) {
+                if (!driverMapInstance) {
+                    driverMapInstance = L.map('driverLiveMap').setView([lat, lng], 14);
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                        maxZoom: 19,
+                        attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+                    }).addTo(driverMapInstance);
+                    driverMarkerInstance = L.marker([lat, lng]).addTo(driverMapInstance).bindPopup("Your Position").openPopup();
+                } else {
+                    driverMapInstance.setView([lat, lng]);
+                }
             }
         }
 
@@ -299,16 +316,15 @@
                     const lat = pos.coords.latitude;
                     const lng = pos.coords.longitude;
                     
-                    // Save to LocalStorage for real-time customer dashboard sync
                     localStorage.setItem('karuthal_live_location', JSON.stringify({ lat, lng, time: new Date().toLocaleTimeString() }));
 
                     if (driverMapInstance && driverMarkerInstance) {
                         driverMarkerInstance.setLatLng([lat, lng]);
                         driverMapInstance.setView([lat, lng]);
                     }
-                }, () => showToast("GPS Error"), { enableHighAccuracy: true });
+                }, () => showToast("GPS Error", "error"), { enableHighAccuracy: true });
             } else {
-                showToast("Geolocation not supported.");
+                showToast("Geolocation not supported.", "error");
             }
         }
 
@@ -328,7 +344,7 @@
                     btnText.innerText = "Stop Camera Stream";
                     showToast("Staff medical video stream initiated!");
                 } catch (err) {
-                    showToast("Camera access failed.");
+                    showToast("Camera access failed.", "error");
                 }
             } else {
                 mediaStreamObj.getTracks().forEach(track => track.stop());
@@ -339,13 +355,6 @@
                 btnText.innerText = "Start Camera Stream";
                 showToast("Stream stopped.");
             }
-        }
-
-        function showToast(message) {
-            const toast = document.getElementById('toastNotification');
-            document.getElementById('toastText').innerText = message;
-            toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('hidden'), 3000);
         }
     </script>
 </body>
