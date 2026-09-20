@@ -22,7 +22,7 @@
             </div>
         </div>
         <div class="flex items-center gap-2">
-            <button onclick="location.href='portal.html'" class="px-3.5 py-1.5 text-xs font-bold bg-slate-100 hover:bg-slate-200 rounded-xl transition">Staff/Driver Portal</button>
+            <button onclick="location.href='index.html'" class="px-3.5 py-1.5 text-xs font-bold bg-slate-100 hover:bg-slate-200 rounded-xl transition">Home</button>
             <button onclick="logoutCustomer()" class="px-3.5 py-1.5 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 rounded-xl transition"><i class="fa-solid fa-power-off"></i> Logout</button>
         </div>
     </header>
@@ -42,7 +42,7 @@
             </button>
         </div>
 
-        <!-- PACKAGE SELECTION SECTION (Synced Exactly with index.html) -->
+        <!-- PACKAGE SELECTION SECTION -->
         <div class="bg-white rounded-3xl border p-6 space-y-4 shadow-sm">
             <div class="border-b pb-3 flex justify-between items-center">
                 <div>
@@ -70,7 +70,7 @@
                     </div>
                 </div>
 
-                <!-- Package 2 (Most Popular) -->
+                <!-- Package 2 -->
                 <div class="bg-emerald-50/60 border-2 border-emerald-500 rounded-2xl p-4 flex flex-col justify-between space-y-3 shadow-sm relative">
                     <span class="absolute -top-2.5 right-4 bg-emerald-600 text-white font-bold text-[9px] px-2.5 py-0.5 rounded-full uppercase tracking-wider">Most Popular</span>
                     <div>
@@ -285,27 +285,20 @@
     <script>
         let mapInstance = null, markerInstance = null;
 
-window.onload = function() {
-    const custSession = JSON.parse(localStorage.getItem('karuthal_customer_session') || 'null');
-    if (!custSession) {
-        // Session illenkil direct login page-ilekku redirect cheyyunnu
-        location.href = 'customer-login.html';
-        return;
-    }
-    initStorage();
-    loadParentProfiles();
-    loadActivePackage();
-    setTimeout(() => {
-        initCustomerMap();
-        startLiveMapSyncPolling();
-    }, 200);
-};
-
-function logoutCustomer() {
-    localStorage.removeItem('karuthal_customer_session');
-    showToast("Logged out from Customer Hub.");
-    setTimeout(() => { location.href = 'customer-login.html'; }, 1000);
-}
+        window.onload = function() {
+            const custSession = JSON.parse(localStorage.getItem('karuthal_customer_session') || 'null');
+            if (!custSession) {
+                location.href = 'customer-login.html';
+                return;
+            }
+            initStorage();
+            loadParentProfiles();
+            loadActivePackage();
+            setTimeout(() => {
+                initCustomerMap();
+                startLiveMapSyncPolling();
+            }, 200);
+        };
 
         function selectPackage(packageName, price) {
             localStorage.setItem('karuthal_active_package', JSON.stringify({ name: packageName, price: price, date: new Date().toLocaleDateString() }));
@@ -484,8 +477,9 @@ function logoutCustomer() {
         }
 
         function logoutCustomer() {
+            localStorage.removeItem('karuthal_customer_session');
             showToast("Logged out from Customer Hub.");
-            setTimeout(() => { location.href = 'portal.html'; }, 1000);
+            setTimeout(() => { location.href = 'customer-login.html'; }, 1000);
         }
     </script>
 </body>
