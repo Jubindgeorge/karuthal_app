@@ -36,7 +36,7 @@
         <div class="relative rounded-3xl bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white p-8 md:p-14 shadow-2xl overflow-hidden">
             <div class="absolute right-0 top-0 w-1/3 h-full bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
             <div class="max-w-2xl space-y-5 relative z-10">
-                <span id="activePlanBadge" class="bg-emerald-500/20 text-emerald-300 text-xs uppercase tracking-widest font-extrabold px-3.5 py-1.5 rounded-full inline-block border border-emerald-400/30">Trusted Elderly Companion Care</span>
+                <span id="activePlanBadgeHeader" class="bg-emerald-500/20 text-emerald-300 text-xs uppercase tracking-widest font-extrabold px-3.5 py-1.5 rounded-full inline-block border border-emerald-400/30">Trusted Elderly Companion Care</span>
                 <h2 class="text-3xl md:text-5xl font-black leading-tight tracking-tight">Comfort, Dignity & Peace of Mind for Your Loved Ones.</h2>
                 <p class="text-slate-300 text-sm md:text-base leading-relaxed">Dedicated healthcare monitoring, hospital travel assistance, and secure family portals backed by professionals.</p>
                 <div class="pt-2 flex flex-wrap gap-4">
@@ -46,7 +46,7 @@
             </div>
         </div>
 
-        <!-- MONTHLY CARE PACKAGES SECTION -->
+        <!-- MONTHLY CARE PACKAGES SECTION (Synced with Customer Dashboard) -->
         <div id="packagesSection" class="space-y-6">
             <div class="text-center max-w-xl mx-auto space-y-2">
                 <span class="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Subscription Plans</span>
@@ -54,7 +54,6 @@
                 <p class="text-slate-600 text-xs">Select or upgrade your subscription package to unlock services for your parents.</p>
             </div>
 
-            <!-- Packages Grid matching Customer Dashboard -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
                 <!-- Package 1 -->
                 <div class="bg-white border rounded-3xl p-6 flex flex-col justify-between space-y-4 hover:border-emerald-500 shadow-sm transition">
@@ -74,7 +73,7 @@
                     </div>
                 </div>
 
-                <!-- Package 2 -->
+                <!-- Package 2 (Most Popular) -->
                 <div class="bg-emerald-50/60 border-2 border-emerald-500 rounded-3xl p-6 flex flex-col justify-between space-y-4 shadow-md relative">
                     <span class="absolute -top-3 right-6 bg-emerald-600 text-white font-black text-[10px] px-3 py-1 rounded-full uppercase tracking-wider shadow">Most Popular</span>
                     <div class="space-y-3">
@@ -128,9 +127,9 @@
                     <div>
                         <label class="font-bold text-slate-700 block mb-1">Select Hospital Visits per Month</label>
                         <select id="customVisits" onchange="calculateCustomPackage()" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
-                            <option value="500">2 Visits (₹1,000)</option>
-                            <option value="900">4 Visits (₹3,600)</option>
-                            <option value="1500">Weekly Visits - 8 Visits (₹12,000)</option>
+                            <option value="500">2 Visits (₹500)</option>
+                            <option value="900">4 Visits (₹900)</option>
+                            <option value="1500">Weekly Visits - 8 Visits (₹1,500)</option>
                         </select>
                     </div>
                     <div>
@@ -243,8 +242,8 @@
 
         function loadActivePackage() {
             const plan = JSON.parse(localStorage.getItem('karuthal_active_package') || 'null');
-            const badge = document.getElementById('activePlanBadge');
-            if (plan) {
+            const badge = document.getElementById('activePlanBadgeHeader');
+            if (plan && badge) {
                 badge.innerText = `Active Plan: ${plan.name} (${plan.price})`;
                 badge.className = "bg-emerald-500/20 text-emerald-300 text-xs uppercase tracking-widest font-extrabold px-3.5 py-1.5 rounded-full inline-block border border-emerald-400/30";
             }
@@ -255,7 +254,8 @@
             const n = parseInt(document.getElementById('customNurse').value) || 0;
             const s = parseInt(document.getElementById('customSos').value) || 0;
             const total = v + n + s;
-            document.getElementById('customTotalCost').innerText = `₹${total.toLocaleString('en-IN')}`;
+            const totalEl = document.getElementById('customTotalCost');
+            if (totalEl) totalEl.innerText = `₹${total.toLocaleString('en-IN')}`;
             return total;
         }
 
@@ -270,7 +270,8 @@
             const config = RATES_CONFIG[v];
             const totalKm = (km * 2) + 6;
             const grandTotal = Math.max(config.minTariff, totalKm * config.perKmRate);
-            document.getElementById('calculatedFare').innerText = `₹${grandTotal.toLocaleString('en-IN')}`;
+            const fareEl = document.getElementById('calculatedFare');
+            if (fareEl) fareEl.innerText = `₹${grandTotal.toLocaleString('en-IN')}`;
             return grandTotal;
         }
 
