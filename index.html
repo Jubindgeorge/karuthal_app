@@ -233,13 +233,25 @@
             calculateTaxiFare();
         };
 
-        function selectPackage(packageName, price) {
-            localStorage.setItem('karuthal_active_package', JSON.stringify({ name: packageName, price: price, date: new Date().toLocaleDateString() }));
-            loadActivePackage();
-            showToast(`Successfully subscribed to ${packageName}! Redirecting to Customer Hub...`);
-            setTimeout(() => { location.href = 'customer-dashboard.html'; }, 1200);
-        }
-
+   function selectPackage(packageName, price) {
+    // 1. Package details localStorage-il save cheyyunnu
+    localStorage.setItem('karuthal_pending_package', JSON.stringify({ name: packageName, price: price, date: new Date().toLocaleDateString() }));
+    
+    // 2. User login aayittundoo enn check cheyyunnu
+    const session = JSON.parse(localStorage.getItem('karuthal_session') || 'null');
+    
+    if (!session) {
+        showToast("Please login or create an account to proceed with subscription.", "error");
+        setTimeout(() => { 
+            // Portal.html-ilekku redirect cheyyunnu (Login / Create Account)
+            location.href = 'portal.html'; 
+        }, 1200);
+    } else {
+        localStorage.setItem('karuthal_active_package', JSON.stringify({ name: packageName, price: price, date: new Date().toLocaleDateString() }));
+        showToast(`Successfully subscribed to ${packageName}! Redirecting to Customer Hub...`);
+        setTimeout(() => { location.href = 'customer-dashboard.html'; }, 1200);
+    }
+}
         function loadActivePackage() {
             const plan = JSON.parse(localStorage.getItem('karuthal_active_package') || 'null');
             const badge = document.getElementById('activePlanBadgeHeader');
