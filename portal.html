@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karuthal - Secure Portal Access</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- TOP NAVBAR -->
+    <header class="bg-white border-b sticky top-0 z-50 px-6 py-4 flex justify-between items-center shadow-sm">
+        <div class="flex items-center gap-3 cursor-pointer" onclick="location.href='portal.html'">
+            <div class="bg-emerald-600 text-white w-10 h-10 rounded-2xl flex items-center justify-center font-black text-lg shadow-md">K</div>
+            <div>
+                <h1 class="font-extrabold text-slate-900 leading-none text-base">Karuthal Secure Portal</h1>
+                <span class="text-[11px] text-emerald-600 font-bold">Encrypted & Role-Protected</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <button onclick="location.href='customer-dashboard.html'" class="px-3.5 py-1.5 text-xs font-bold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl transition">Customer Hub</button>
+            <button id="logoutBtn" onclick="logoutUser()" class="hidden px-3.5 py-1.5 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 rounded-xl transition"><i class="fa-solid fa-power-off"></i> Logout</button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-4xl w-full mx-auto p-6 flex-grow space-y-6 flex flex-col items-center justify-center">
+
+        <!-- TOAST NOTIFICATION -->
+        <div id="toastNotification" class="hidden bg-slate-900 text-white text-xs px-4 py-3 rounded-2xl shadow-lg fixed bottom-6 right-6 z-50 flex items-center gap-3 animate-bounce">
+            <i class="fa-solid fa-circle-info text-emerald-400"></i>
+            <span id="toastText">Notification</span>
+        </div>
+
+        <!-- AUTH LOGIN SCREEN -->
+        <div id="authLoginView" class="max-w-md w-full bg-white rounded-3xl border p-8 space-y-6 shadow-xl my-8">
+            <div class="text-center space-y-2">
+                <div class="bg-emerald-100 text-emerald-800 w-12 h-12 rounded-2xl flex items-center justify-center mx-auto text-xl font-black shadow-inner">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h2 class="font-extrabold text-slate-900 text-xl">Staff & Driver Portal Login</h2>
+                <p class="text-xs text-slate-500">Sign in securely to manage rides, drivers, and medical feeds.</p>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Email Address *</label>
+                    <input type="email" id="loginEmail" placeholder="admin@karuthal.app / driver@karuthal.app" class="w-full bg-slate-50 border rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-emerald-600">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Password *</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" class="w-full bg-slate-50 border rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-emerald-600">
+                </div>
+
+                <button onclick="handleAuthAction()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3.5 rounded-xl shadow transition text-xs">Sign In to Portal</button>
+                <div class="text-center pt-2">
+                    <a href="customer-dashboard.html" class="text-xs text-emerald-600 hover:underline font-bold">Go to Customer & Family Hub &rarr;</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADMIN / STAFF MANAGEMENT PANEL -->
+        <div id="adminStaffManagementView" class="hidden w-full bg-white rounded-3xl border p-6 space-y-6 shadow-sm my-6">
+            <div class="border-b pb-4 flex justify-between items-center">
+                <div>
+                    <h3 class="font-extrabold text-slate-900 text-base">Authorized Staff & Driver Account Generator</h3>
+                    <p class="text-xs text-slate-500">Register new drivers and staff members here.</p>
+                </div>
+                <span class="bg-red-100 text-red-800 text-[10px] font-black px-2.5 py-1 rounded-full uppercase">Admin Privileges</span>
+            </div>
+
+            <form onsubmit="event.preventDefault(); createNewStaffOrDriverAccount();" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                <div>
+                    <label class="font-bold text-slate-700 block mb-1">Select Account Type *</label>
+                    <select id="newAccType" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
+                        <option value="driver">Taxi Driver Account</option>
+                        <option value="staff">Care Staff / Coordinator Account</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="font-bold text-slate-700 block mb-1">Full Name *</label>
+                    <input type="text" id="newAccName" placeholder="Ramesh Kumar" required class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
+                </div>
+                <div>
+                    <label class="font-bold text-slate-700 block mb-1">Phone Number *</label>
+                    <input type="tel" id="newAccPhone" placeholder="9847112233" required class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
+                </div>
+                <div>
+                    <label class="font-bold text-slate-700 block mb-1">Generated Temporary Password *</label>
+                    <input type="text" id="newAccPass" value="karuthal2026" required class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
+                </div>
+                <div class="md:col-span-2">
+                    <button type="submit" class="w-full bg-slate-900 hover:bg-emerald-600 text-white font-extrabold py-3 rounded-xl transition shadow">Create & Authorize New Account</button>
+                </div>
+            </form>
+
+            <div class="pt-4 border-t space-y-3">
+                <h4 class="font-extrabold text-slate-900 text-sm">Active Staff & Driver Directory</h4>
+                <div id="adminAccountsListContainer" class="space-y-2 max-h-60 overflow-y-auto"></div>
+            </div>
+        </div>
+
+        <!-- DASHBOARD WRAPPER -->
+        <div id="portalDashboardWrapper" class="hidden w-full space-y-6">
+
+            <!-- TAXI DRIVER VIEW -->
+            <div id="driverPortalView" class="hidden space-y-6 w-full">
+                <div class="bg-white rounded-3xl border p-6 space-y-4 shadow-sm">
+                    <div class="flex justify-between items-center border-b pb-3">
+                        <h3 class="font-extrabold text-slate-900 text-base">Taxi Driver Live GPS Broadcast</h3>
+                        <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-1 rounded-full">Driver Portal</span>
+                    </div>
+                    <div class="bg-slate-900 text-white p-5 rounded-3xl space-y-4 text-xs shadow-md">
+                        <div class="flex justify-between font-bold text-emerald-400">
+                            <span><i class="fa-solid fa-satellite-dish animate-pulse"></i> LIVE GPS TRANSMITTER</span>
+                            <span id="gpsStatusBadge" class="bg-slate-800 text-slate-300 px-2.5 py-0.5 rounded text-[10px]">Standby</span>
+                        </div>
+                        <p class="text-slate-300">• Broadcast coordinates continuously to the customer portal in real-time.</p>
+                        <div id="driverLiveMap" class="w-full h-48 rounded-2xl z-0 border border-slate-700"></div>
+                        <button onclick="startLiveGPSBroadcast()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow transition">Start Live Location Tracking</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STAFF / ADMIN VIEW -->
+            <div id="staffPortalView" class="hidden space-y-6 w-full">
+                <div class="bg-white rounded-3xl border p-6 space-y-4 shadow-sm">
+                    <div class="flex justify-between items-center border-b pb-4">
+                        <div>
+                            <h3 class="font-extrabold text-slate-900 text-base">Staff & Admin Medical Hub</h3>
+                            <span class="text-[11px] text-emerald-700 font-bold">Authorized Personnel Only</span>
+                        </div>
+                        <button onclick="toggleStaffVideoStream()" id="camStreamBtn" class="bg-red-600 hover:bg-red-700 text-white text-xs font-black px-4 py-2.5 rounded-xl shadow flex items-center gap-2 transition">
+                            <i class="fa-solid fa-video"></i> <span id="camBtnText">Start Camera Stream</span>
+                        </button>
+                    </div>
+                    
+                    <div class="relative bg-slate-900 rounded-3xl overflow-hidden aspect-video flex items-center justify-center shadow-inner">
+                        <video id="staffWebcamFeed" autoplay playsinline muted class="w-full h-full object-cover hidden"></video>
+                        <div id="camPlaceholder" class="text-center text-slate-400 space-y-2">
+                            <i class="fa-solid fa-video-slash text-4xl"></i>
+                            <p class="text-xs">Camera stream is offline. Click 'Start Camera Stream' to broadcast.</p>
+                        </div>
+                        <div id="liveBadge" class="absolute top-4 left-4 bg-red-600 text-white font-black text-[10px] px-3 py-1 rounded-full uppercase tracking-wider hidden animate-pulse">
+                            ● LIVE BROADCASTING
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="text-center py-6 text-xs text-slate-400 border-t bg-white">
+        &copy; 2026 Karuthal Project. All rights reserved. Encrypted & Secured Access.
+    </footer>
+
+    <!-- SCRIPT LOGIC -->
+    <script>
+        let driverMapInstance = null, driverMarkerInstance = null;
+        let mediaStreamObj = null;
+        let watchId = null;
+
+        window.onload = function() {
+            checkExistingSession();
+        };
+
+        function checkExistingSession() {
+            const session = JSON.parse(localStorage.getItem('karuthal_session') || 'null');
+            if (session) {
+                if (session.role === 'admin' || session.role === 'staff') {
+                    revealAdminDashboard(session.email);
+                } else if (session.role === 'driver') {
+                    revealDriverDashboard();
+                }
+            }
+        }
+
+        function handleAuthAction() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            if (!email || !password) {
+                showToast("Please enter email and password.");
+                return;
+            }
+
+            if (email.includes('admin') || email.includes('staff')) {
+                localStorage.setItem('karuthal_session', JSON.stringify({ email, role: 'admin' }));
+                revealAdminDashboard(email);
+            } else if (email.includes('driver')) {
+                localStorage.setItem('karuthal_session', JSON.stringify({ email, role: 'driver' }));
+                revealDriverDashboard();
+            } else {
+                showToast("For customer login, please use Customer Hub.");
+                setTimeout(() => location.href = 'customer-dashboard.html', 1500);
+            }
+        }
+
+        function revealDriverDashboard() {
+            document.getElementById('authLoginView').classList.add('hidden');
+            document.getElementById('portalDashboardWrapper').classList.remove('hidden');
+            document.getElementById('driverPortalView').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.remove('hidden');
+            setTimeout(() => initDriverMap(), 200);
+            showToast("Welcome to Driver Portal!");
+        }
+
+        function revealAdminDashboard(email) {
+            document.getElementById('authLoginView').classList.add('hidden');
+            document.getElementById('portalDashboardWrapper').classList.remove('hidden');
+            document.getElementById('staffPortalView').classList.remove('hidden');
+            document.getElementById('adminStaffManagementView').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.remove('hidden');
+            loadAllRegisteredAccountsRoute();
+            showToast("Welcome Authorized Admin/Staff: " + email);
+        }
+
+        function logoutUser() {
+            localStorage.removeItem('karuthal_session');
+            if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+            document.getElementById('portalDashboardWrapper').classList.add('hidden');
+            document.getElementById('driverPortalView').classList.add('hidden');
+            document.getElementById('staffPortalView').classList.add('hidden');
+            document.getElementById('adminStaffManagementView').classList.add('hidden');
+            document.getElementById('authLoginView').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.add('hidden');
+            showToast("Logged out securely.");
+        }
+
+        function createNewStaffOrDriverAccount() {
+            const type = document.getElementById('newAccType').value;
+            const name = document.getElementById('newAccName').value;
+            const phone = document.getElementById('newAccPhone').value;
+            const pass = document.getElementById('newAccPass').value;
+
+            if (type === 'driver') {
+                const drivers = JSON.parse(localStorage.getItem('karuthal_drivers') || '[]');
+                drivers.push({ id: 'DRV-' + Date.now().toString().slice(-4), name, phone, pass });
+                localStorage.setItem('karuthal_drivers', JSON.stringify(drivers));
+                showToast("New Driver Account Created Successfully!");
+            } else {
+                const staff = JSON.parse(localStorage.getItem('karuthal_staff') || '[]');
+                staff.push({ id: 'STF-' + Date.now().toString().slice(-4), name, phone, role: 'Care Coordinator', pass });
+                localStorage.setItem('karuthal_staff', JSON.stringify(staff));
+                showToast("New Staff Account Created Successfully!");
+            }
+            loadAllRegisteredAccountsRoute();
+        }
+
+        function loadAllRegisteredAccountsRoute() {
+            const drivers = JSON.parse(localStorage.getItem('karuthal_drivers') || '[]');
+            const staff = JSON.parse(localStorage.getItem('karuthal_staff') || '[]');
+            
+            let html = '';
+            drivers.forEach(d => {
+                html += `<div class="p-3 bg-slate-50 rounded-xl border flex justify-between items-center text-xs mb-2">
+                    <div><strong>[Driver] ${d.name}</strong> (${d.phone})</div>
+                    <span class="text-emerald-600 font-bold">${d.id}</span>
+                </div>`;
+            });
+            staff.forEach(s => {
+                html += `<div class="p-3 bg-slate-50 rounded-xl border flex justify-between items-center text-xs mb-2">
+                    <div><strong>[Staff] ${s.name}</strong> (${s.phone})</div>
+                    <span class="text-blue-600 font-bold">${s.id}</span>
+                </div>`;
+            });
+            
+            const container = document.getElementById('adminAccountsListContainer');
+            if (container) {
+                container.innerHTML = html || '<p class="text-xs text-slate-400">No custom accounts added yet.</p>';
+            }
+        }
+
+        function initDriverMap(lat = 10.0159, lng = 76.3419) {
+            const mapEl = document.getElementById('driverLiveMap');
+            if (mapEl && !driverMapInstance) {
+                driverMapInstance = L.map('driverLiveMap').setView([lat, lng], 14);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+                }).addTo(driverMapInstance);
+                driverMarkerInstance = L.marker([lat, lng]).addTo(driverMapInstance).bindPopup("Your Position").openPopup();
+            }
+        }
+
+        function startLiveGPSBroadcast() {
+            if (navigator.geolocation) {
+                showToast("GPS Broadcasting Activated!");
+                document.getElementById('gpsStatusBadge').innerText = "Broadcasting Live";
+                document.getElementById('gpsStatusBadge').className = "bg-emerald-500 text-slate-900 px-2.5 py-0.5 rounded text-[10px] font-bold animate-pulse";
+
+                watchId = navigator.geolocation.watchPosition((pos) => {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+                    
+                    // Save to LocalStorage for real-time customer dashboard sync
+                    localStorage.setItem('karuthal_live_location', JSON.stringify({ lat, lng, time: new Date().toLocaleTimeString() }));
+
+                    if (driverMapInstance && driverMarkerInstance) {
+                        driverMarkerInstance.setLatLng([lat, lng]);
+                        driverMapInstance.setView([lat, lng]);
+                    }
+                }, () => showToast("GPS Error"), { enableHighAccuracy: true });
+            } else {
+                showToast("Geolocation not supported.");
+            }
+        }
+
+        async function toggleStaffVideoStream() {
+            const videoElem = document.getElementById('staffWebcamFeed');
+            const placeholder = document.getElementById('camPlaceholder');
+            const liveBadge = document.getElementById('liveBadge');
+            const btnText = document.getElementById('camBtnText');
+
+            if (!mediaStreamObj) {
+                try {
+                    mediaStreamObj = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                    videoElem.srcObject = mediaStreamObj;
+                    videoElem.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                    liveBadge.classList.remove('hidden');
+                    btnText.innerText = "Stop Camera Stream";
+                    showToast("Staff medical video stream initiated!");
+                } catch (err) {
+                    showToast("Camera access failed.");
+                }
+            } else {
+                mediaStreamObj.getTracks().forEach(track => track.stop());
+                mediaStreamObj = null;
+                videoElem.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+                liveBadge.classList.add('hidden');
+                btnText.innerText = "Start Camera Stream";
+                showToast("Stream stopped.");
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toastNotification');
+            document.getElementById('toastText').innerText = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karuthal - Senior Care & Companion Travel Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- REFINED CLEAN HEADER (No Internal/Staff Links Visible) -->
+    <header class="bg-white/90 backdrop-blur border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="location.href='index.html'">
+                <div class="bg-emerald-600 text-white p-3 rounded-2xl shadow-md"><i class="fa-solid fa-hand-holding-heart text-2xl"></i></div>
+                <div>
+                    <h1 class="text-2xl font-black text-slate-900 tracking-tight">KARUTHAL</h1>
+                    <p class="text-[11px] text-slate-500 font-medium">Senior Care & Companion Travel Services</p>
+                </div>
+            </div>
+            <nav class="hidden md:flex space-x-6 text-sm font-semibold items-center">
+                <a href="index.html" class="text-emerald-700 font-bold border-b-2 border-emerald-600 pb-1">Home</a>
+                <a href="#packagesSection" class="hover:text-emerald-600 transition">Care Packages</a>
+                <a href="#customPackageSection" class="hover:text-emerald-600 transition">Custom Builder</a>
+                <a href="#taxiSection" class="hover:text-emerald-600 transition">Taxi Calculator</a>
+                <a href="portal.html" class="bg-slate-900 text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-emerald-600 transition shadow-md">Customer Portal Login</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto p-6 space-y-12">
+        <!-- MODERN PREMIUM HERO SECTION -->
+        <div class="relative rounded-3xl bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white p-8 md:p-14 shadow-2xl overflow-hidden">
+            <div class="absolute right-0 top-0 w-1/3 h-full bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="max-w-2xl space-y-5 relative z-10">
+                <span class="bg-emerald-500/20 text-emerald-300 text-xs uppercase tracking-widest font-extrabold px-3.5 py-1.5 rounded-full inline-block border border-emerald-400/30">Trusted Elderly Companion Care in Kerala</span>
+                <h2 class="text-3xl md:text-5xl font-black leading-tight tracking-tight">Comfort, Dignity & Peace of Mind for Your Loved Ones.</h2>
+                <p class="text-slate-300 text-sm md:text-base leading-relaxed">Dedicated healthcare monitoring, hospital travel assistance, and secure family portals backed by professionals.</p>
+                <div class="pt-2 flex flex-wrap gap-4">
+                    <a href="portal.html" class="bg-emerald-500 text-slate-950 font-black px-6 py-3.5 rounded-2xl text-xs hover:bg-emerald-400 transition shadow-lg">Customer / Family Login</a>
+                    <a href="#customPackageSection" class="bg-white/10 hover:bg-white/20 text-white font-black px-6 py-3.5 rounded-2xl text-xs transition border border-white/20 shadow-lg">Build Custom Package</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARE PACKAGES SECTION -->
+        <div id="packagesSection" class="space-y-6">
+            <div class="text-center max-w-xl mx-auto space-y-2">
+                <h3 class="text-2xl font-extrabold text-slate-900">Featured Care Packages</h3>
+                <p class="text-slate-600 text-xs">Affordable monthly care and companion support designed for seniors.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto" id="homePackagesContainer"></div>
+        </div>
+
+        <!-- CUSTOM PACKAGE BUILDER SECTION -->
+        <div id="customPackageSection" class="bg-white rounded-3xl border shadow-xl p-6 md:p-8 max-w-4xl mx-auto space-y-6">
+            <div class="border-b pb-4 flex justify-between items-center">
+                <div>
+                    <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-emerald-600"></i> Custom Care Package Builder
+                    </h3>
+                    <p class="text-slate-500 text-xs">Tailor a unique monthly package according to your parent's exact health requirements.</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+                <div class="space-y-4">
+                    <div>
+                        <label class="font-bold text-slate-700 block mb-1">Select Hospital Visits per Month</label>
+                        <select id="customVisits" onchange="calculateCustomPackage()" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
+                            <option value="500">2 Visits (₹1,000)</option>
+                            <option value="900">4 Visits (₹3,600)</option>
+                            <option value="1500">Weekly Visits - 8 Visits (₹12,000)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="font-bold text-slate-700 block mb-1">Nurse Home Checkups</label>
+                        <select id="customNurse" onchange="calculateCustomPackage()" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
+                            <option value="0">None</option>
+                            <option value="1500">Bi-weekly Nurse Checkup (₹1,500)</option>
+                            <option value="3000">Weekly Nurse Checkup (₹3,000)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="font-bold text-slate-700 block mb-1">Emergency 24/7 SOS Monitoring</label>
+                        <select id="customSos" onchange="calculateCustomPackage()" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
+                            <option value="1000">Included (₹1,000)</option>
+                            <option value="0">Not Required (₹0)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-6 flex flex-col justify-between shadow-md">
+                    <div class="space-y-2">
+                        <div class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Custom Package Estimate</div>
+                        <div class="text-3xl font-black" id="customTotalCost">₹0</div>
+                        <p class="text-[11px] text-slate-300">Includes dedicated coordinator updates, medication tracking, and family portal access.</p>
+                    </div>
+                    <button onclick="bookCustomPackage()" class="mt-4 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-3 rounded-xl text-xs transition shadow">Subscribe Custom Package</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAXI FARE CALCULATOR SECTION -->
+        <div id="taxiSection" class="bg-white rounded-3xl border shadow-xl p-6 md:p-8 max-w-4xl mx-auto space-y-6">
+            <div class="border-b pb-4">
+                <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-taxi text-emerald-600"></i> Senior-Friendly Taxi Fare Calculator
+                </h3>
+                <p class="text-slate-500 text-xs">Calculates automatically with companion assistance included.</p>
+            </div>
+
+            <form onsubmit="event.preventDefault(); openModal('taxiBookingModal');" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                <div>
+                    <label class="font-bold text-slate-700 block mb-1">Vehicle Type</label>
+                    <select id="vehicleType" onchange="calculateTaxiFare()" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
+                        <option value="hatchback_sedan">Hatchback / Sedan (Dzire, Etios)</option>
+                        <option value="suv">SUV (Innova, Scorpio)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="font-bold text-slate-700 block mb-1">One-Way Map Distance (KM)</label>
+                    <input type="number" min="1" id="tripKm" value="15" oninput="calculateTaxiFare()" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
+                </div>
+                <div>
+                    <label class="font-bold text-slate-700 block mb-1">Pickup Address</label>
+                    <input type="text" id="pickupAddr" value="Kakkanad, Kochi" required class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
+                </div>
+                <div>
+                    <label class="font-bold text-slate-700 block mb-1">Destination Hospital / Drop Address</label>
+                    <input type="text" id="dropAddr" value="Amrita Hospital, Edappally" required class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
+                </div>
+                <div class="md:col-span-2 pt-2">
+                    <div class="bg-slate-50 rounded-2xl p-4 border flex justify-between items-center">
+                        <div>
+                            <div class="text-[10px] font-bold text-slate-500 uppercase">Estimated Total Fare</div>
+                            <div class="text-2xl font-black text-emerald-700" id="calculatedFare">₹0</div>
+                        </div>
+                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-6 py-3 rounded-xl text-xs transition shadow">Confirm & Book Taxi</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- TAXI BOOKING MODAL -->
+    <div id="taxiBookingModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl border text-xs">
+            <h3 class="text-lg font-black text-slate-900">Complete Taxi Booking</h3>
+            <form onsubmit="event.preventDefault(); submitTaxiBooking();" class="space-y-3">
+                <div>
+                    <label class="font-bold text-slate-700 block mb-1">Passenger / Senior Name *</label>
+                    <input type="text" id="tbPassengerName" value="K. P. Menon" required class="w-full px-3.5 py-2.5 border rounded-xl">
+                </div>
+                <div>
+                    <label class="font-bold text-slate-700 block mb-1">Contact Phone *</label>
+                    <input type="tel" id="tbPhone" value="9846011223" required class="w-full px-3.5 py-2.5 border rounded-xl">
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 rounded-xl text-sm shadow">Submit & Print Invoice PDF</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="text-center py-8 text-xs text-slate-500 border-t bg-white mt-12">
+        <p>&copy; 2026 Karuthal Senior Care Services. All rights reserved. Cloud & GPS Connected.</p>
+    </footer>
+
+    <script src="app.js"></script>
+    <script>
+        window.onload = function() {
+            initStorage();
+            renderHomePackages();
+            calculateCustomPackage();
+            calculateTaxiFare();
+        };
+
+        function renderHomePackages() {
+            const pkgs = JSON.parse(localStorage.getItem('karuthal_packages') || '[]');
+            const container = document.getElementById('homePackagesContainer');
+            container.innerHTML = pkgs.map(p => `
+                <div class="bg-white rounded-3xl border p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition">
+                    <div class="space-y-3">
+                        <span class="bg-emerald-100 text-emerald-800 font-bold text-[10px] uppercase px-2.5 py-1 rounded-full">Monthly Plan</span>
+                        <h4 class="text-xl font-black text-slate-800">${p.name}</h4>
+                        <div class="text-2xl font-extrabold text-emerald-700">₹${p.price.toLocaleString('en-IN')} <span class="text-xs font-medium text-slate-500">/ month</span></div>
+                        <p class="text-xs text-slate-600">• ${p.desc}</p>
+                    </div>
+                    <button onclick="showToast('${p.name} Selected!')" class="mt-6 w-full bg-slate-900 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs transition">Select Plan</button>
+                </div>
+            `).join('');
+        }
+
+        function calculateCustomPackage() {
+            const v = parseInt(document.getElementById('customVisits').value) || 0;
+            const n = parseInt(document.getElementById('customNurse').value) || 0;
+            const s = parseInt(document.getElementById('customSos').value) || 0;
+            const total = v + n + s;
+            document.getElementById('customTotalCost').innerText = `₹${total.toLocaleString('en-IN')}`;
+            return total;
+        }
+
+        function bookCustomPackage() {
+            const cost = calculateCustomPackage();
+            showToast(`Custom Package Booked Successfully! Total: ₹${cost}`);
+        }
+
+        function calculateTaxiFare() {
+            const v = document.getElementById('vehicleType').value;
+            const km = parseFloat(document.getElementById('tripKm').value) || 0;
+            const config = RATES_CONFIG[v];
+            const totalKm = (km * 2) + 6;
+            const grandTotal = Math.max(config.minTariff, totalKm * config.perKmRate);
+            document.getElementById('calculatedFare').innerText = `₹${grandTotal.toLocaleString('en-IN')}`;
+            return grandTotal;
+        }
+
+        function submitTaxiBooking() {
+            closeModal('taxiBookingModal');
+            showToast('Booking Confirmed! Opening Portal...');
+            setTimeout(() => { location.href = 'portal.html'; }, 1000);
+        }
+    </script>
+</body>
+</html>
