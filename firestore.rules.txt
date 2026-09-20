@@ -1,0 +1,17 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users collection rules
+    match /users/{userId} {
+      allow read, write: if request.auth != null;
+    }
+    // Live tracking for drivers and customers
+    match /live_tracking/{docId} {
+      allow read, write: if request.auth != null;
+    }
+    // Emergency SOS alerts
+    match /emergency_sos/{docId} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
