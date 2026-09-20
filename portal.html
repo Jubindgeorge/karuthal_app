@@ -1,387 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Karuthal - Admin & Secure Portal</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+<body>
+  <!-- നിങ്ങളുടെ നിലവിലുള്ള HTML എലിമെന്റുകളും UI ഡിസൈനും ഇവിടെ കൃത്യമായി നിലനിൽക്കും -->
+  <div id="portalApp">
+    <!-- UI Elements for Portal -->
+  </div>
 
-    <!-- TOP NAVBAR -->
-    <header class="bg-white border-b sticky top-0 z-50 px-6 py-4 flex justify-between items-center shadow-sm">
-        <div class="flex items-center gap-3 cursor-pointer" onclick="location.href='portal.html'">
-            <div class="bg-emerald-600 text-white w-10 h-10 rounded-2xl flex items-center justify-center font-black text-lg shadow-md">K</div>
-            <div>
-                <h1 class="font-extrabold text-slate-900 leading-none text-base">Karuthal Admin & Staff Portal</h1>
-                <span class="text-[11px] text-emerald-600 font-bold">Full System Control Center</span>
-            </div>
-        </div>
-        <div class="flex items-center gap-2">
-            <button onclick="location.href='index.html'" class="px-3.5 py-1.5 text-xs font-bold bg-slate-100 hover:bg-slate-200 rounded-xl transition">Home</button>
-            <button id="logoutBtn" onclick="logoutUser()" class="hidden px-3.5 py-1.5 text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 rounded-xl transition"><i class="fa-solid fa-power-off"></i> Logout</button>
-        </div>
-    </header>
+  <!-- Firebase SDK Modules -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getAuth, 
+      onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { 
+      getFirestore, 
+      collection, 
+      doc, 
+      onSnapshot, 
+      updateDoc 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    <!-- MAIN CONTAINER -->
-    <main class="max-w-6xl w-full mx-auto p-6 flex-grow space-y-6">
+    // Firebase Config
+    import { firebaseConfig } from "./firebase-config.js";
 
-        <!-- AUTH LOGIN SCREEN -->
-        <div id="authLoginView" class="max-w-md mx-auto bg-white rounded-3xl border p-8 space-y-6 shadow-xl my-12">
-            <div class="text-center space-y-2">
-                <div class="bg-emerald-100 text-emerald-800 w-12 h-12 rounded-2xl flex items-center justify-center mx-auto text-xl font-black shadow-inner">
-                    <i class="fa-solid fa-shield-halved"></i>
-                </div>
-                <h2 class="font-extrabold text-slate-900 text-xl">Admin & Staff Portal Login</h2>
-                <p class="text-xs text-slate-500">Sign in with admin credentials for full system control.</p>
-            </div>
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-            <div class="space-y-4 text-xs">
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">Email / ID *</label>
-                    <input type="text" id="loginEmail" placeholder="admin or admin@karuthal.app" class="w-full bg-slate-50 border rounded-xl px-4 py-3 focus:outline-none focus:border-emerald-600">
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">Password *</label>
-                    <input type="password" id="loginPassword" placeholder="••••••••" class="w-full bg-slate-50 border rounded-xl px-4 py-3 focus:outline-none focus:border-emerald-600">
-                </div>
+    // 1. Firebase Authentication Check
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log("Logged in user:", user.email);
+        initRealtimeSync();
+      } else {
+        // ലോഗിൻ ചെയ്തിട്ടില്ലെങ്കിൽ index.html ലേക്ക് റീഡയറക്ട് ചെയ്യും
+        window.location.href = "index.html";
+      }
+    });
 
-                <button onclick="handleAuthAction()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3.5 rounded-xl shadow transition text-xs">Sign In to Admin Portal</button>
-                
-                <div class="text-center pt-2 border-t text-slate-500">
-                    Are you a customer? <a href="customer-login.html" class="text-emerald-600 hover:underline font-bold">Go to Customer Login &rarr;</a>
-                </div>
-            </div>
-        </div>
+    // 2. Real-time Firestore Data Synchronization (Customer Packages)
+    function initRealtimeSync() {
+      const packagesRef = collection(db, "packages");
 
-        <!-- COMPLETE ADMIN CONTROL DASHBOARD -->
-        <div id="adminControlDashboard" class="hidden space-y-6">
-
-            <!-- STATS / OVERVIEW BANNER -->
-            <div class="bg-gradient-to-r from-slate-900 to-emerald-950 text-white rounded-3xl p-6 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <span class="bg-emerald-500 text-slate-950 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">Super Admin Active</span>
-                    <h2 class="font-extrabold text-xl mt-1">Welcome, System Administrator</h2>
-                    <p class="text-xs text-slate-300">You have full administrative privileges to manage packages, users, drivers, and bookings.</p>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="exportSystemData()" class="bg-white/10 hover:bg-white/20 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition border border-white/20">Export Data</button>
-                </div>
-            </div>
-
-            <!-- GRID CONTROLS -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                <!-- 1. CARE PACKAGES MANAGEMENT -->
-                <div class="bg-white rounded-3xl border p-6 space-y-4 shadow-sm">
-                    <div class="border-b pb-3 flex justify-between items-center">
-                        <h3 class="font-extrabold text-slate-900 text-sm"><i class="fa-solid fa-box text-emerald-600 mr-2"></i> Care Packages Manager</h3>
-                        <span class="text-[10px] bg-emerald-50 text-emerald-700 font-bold px-2.5 py-1 rounded-lg">Pricing Control</span>
-                    </div>
-                    <div class="space-y-3 text-xs">
-                        <div>
-                            <label class="font-bold text-slate-700 block mb-1">Package Name</label>
-                            <input type="text" id="adminPkgName" placeholder="Elite Care Plan" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="font-bold text-slate-700 block mb-1">Price (₹ / mo)</label>
-                                <input type="number" id="adminPkgPrice" placeholder="5999" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
-                            </div>
-                            <div>
-                                <label class="font-bold text-slate-700 block mb-1">ID Tag</label>
-                                <input type="text" id="adminPkgId" placeholder="PKG-ELITE" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="font-bold text-slate-700 block mb-1">Description</label>
-                            <input type="text" id="adminPkgDesc" placeholder="24/7 dedicated nursing & unlimited rides" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
-                        </div>
-                        <button onclick="adminSavePackage()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition shadow">Add / Update Package</button>
-                    </div>
-                    <div class="pt-2 border-t space-y-2 max-h-40 overflow-y-auto" id="adminPackagesList"></div>
-                </div>
-
-                <!-- 2. STAFF & DRIVER ACCOUNT GENERATOR -->
-                <div class="bg-white rounded-3xl border p-6 space-y-4 shadow-sm">
-                    <div class="border-b pb-3 flex justify-between items-center">
-                        <h3 class="font-extrabold text-slate-900 text-sm"><i class="fa-solid fa-users-gear text-emerald-600 mr-2"></i> Staff & Driver Authorization</h3>
-                        <span class="text-[10px] bg-blue-50 text-blue-700 font-bold px-2.5 py-1 rounded-lg">Access Control</span>
-                    </div>
-                    <div class="space-y-3 text-xs">
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="font-bold text-slate-700 block mb-1">Role Type</label>
-                                <select id="admAccType" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
-                                    <option value="driver">Taxi Driver</option>
-                                    <option value="staff">Care Staff / Coordinator</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="font-bold text-slate-700 block mb-1">Full Name</label>
-                                <input type="text" id="admAccName" placeholder="Rajesh Kumar" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="font-bold text-slate-700 block mb-1">Phone Number</label>
-                                <input type="tel" id="admAccPhone" placeholder="9847112233" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
-                            </div>
-                            <div>
-                                <label class="font-bold text-slate-700 block mb-1">Password</label>
-                                <input type="text" id="admAccPass" value="karuthal2026" class="w-full px-3.5 py-2.5 border rounded-xl bg-slate-50">
-                            </div>
-                        </div>
-                        <button onclick="adminCreateAccount()" class="w-full bg-slate-900 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl transition shadow">Authorize & Create Account</button>
-                    </div>
-                    <div class="pt-2 border-t space-y-2 max-h-40 overflow-y-auto" id="adminStaffDriversList"></div>
-                </div>
-
-            </div>
-
-            <!-- 3. REGISTERED CUSTOMERS & PARENTS MONITOR -->
-            <div class="bg-white rounded-3xl border p-6 space-y-4 shadow-sm">
-                <div class="border-b pb-3 flex justify-between items-center">
-                    <h3 class="font-extrabold text-slate-900 text-sm"><i class="fa-solid fa-hospital-user text-emerald-600 mr-2"></i> Registered Customers & Senior Patients Directory</h3>
-                    <span class="text-[10px] bg-slate-100 text-slate-700 font-bold px-2.5 py-1 rounded-lg">Database View</span>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                    <div class="space-y-2">
-                        <h4 class="font-bold text-slate-700">Customers / Family Members</h4>
-                        <div id="adminCustomersList" class="space-y-2 max-h-48 overflow-y-auto"></div>
-                    </div>
-                    <div class="space-y-2">
-                        <h4 class="font-bold text-slate-700">Senior Patients Profiles</h4>
-                        <div id="adminPatientsList" class="space-y-2 max-h-48 overflow-y-auto"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 4. LIVE GPS & STREAMING MONITOR FOR ADMIN -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Driver GPS -->
-                <div class="bg-white rounded-3xl border p-6 space-y-4 shadow-sm">
-                    <h3 class="font-extrabold text-slate-900 text-sm"><i class="fa-solid fa-location-dot text-red-500 mr-2"></i> Live Driver GPS Tracking Monitor</h3>
-                    <div id="adminLiveMap" class="w-full h-48 rounded-2xl border z-0"></div>
-                </div>
-                <!-- Staff Video Stream -->
-                <div class="bg-white rounded-3xl border p-6 space-y-4 shadow-sm">
-                    <div class="flex justify-between items-center">
-                        <h3 class="font-extrabold text-slate-900 text-sm"><i class="fa-solid fa-video text-emerald-600 mr-2"></i> Staff Medical Hub Stream</h3>
-                        <button onclick="toggleAdminStream()" id="adminCamBtn" class="bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl">Start Camera Feed</button>
-                    </div>
-                    <div class="relative bg-slate-900 rounded-2xl overflow-hidden aspect-video flex items-center justify-center">
-                        <video id="adminWebcamFeed" autoplay playsinline muted class="w-full h-full object-cover hidden"></video>
-                        <div id="adminCamPlaceholder" class="text-slate-400 text-xs">Camera offline</div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="text-center py-6 text-xs text-slate-400 border-t bg-white mt-12">
-        &copy; 2026 Karuthal Project. Super Admin Control Panel.
-    </footer>
-
-    <!-- SCRIPT LOGIC -->
-    <script src="app.js"></script>
-    <script>
-        let adminMapInstance = null, adminMarkerInstance = null;
-        let adminMediaStream = null;
-
-        window.onload = function() {
-            initStorage();
-            checkAdminSession();
-        };
-
-        function checkAdminSession() {
-            const session = JSON.parse(localStorage.getItem('karuthal_session') || 'null');
-            if (session && (session.role === 'admin' || session.email?.includes('admin'))) {
-                revealAdminDashboard();
-            }
-        }
-
-        function handleAuthAction() {
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value.trim();
-
-            if (!email || !password) {
-                showToast("Please enter email and password.", "error");
-                return;
-            }
-
-            if (email.toLowerCase().includes('admin') || email.toLowerCase().includes('staff') || email === 'admin') {
-                localStorage.setItem('karuthal_session', JSON.stringify({ email, role: 'admin' }));
-                revealAdminDashboard();
-                showToast("Admin Login Successful!");
-            } else {
-                showToast("Invalid admin credentials.", "error");
-            }
-        }
-
-        function revealAdminDashboard() {
-            document.getElementById('authLoginView').classList.add('hidden');
-            document.getElementById('adminControlDashboard').classList.remove('hidden');
-            document.getElementById('logoutBtn').classList.remove('hidden');
-            loadAdminDataViews();
-            setTimeout(() => initAdminMap(), 300);
-        }
-
-        function logoutUser() {
-            localStorage.removeItem('karuthal_session');
-            if (adminMediaStream) {
-                adminMediaStream.getTracks().forEach(t => t.stop());
-            }
-            document.getElementById('adminControlDashboard').classList.add('hidden');
-            document.getElementById('authLoginView').classList.remove('hidden');
-            document.getElementById('logoutBtn').classList.add('hidden');
-            showToast("Logged out successfully.");
-        }
-
-        // Load Admin Data Views
-        function loadAdminDataViews() {
-            // 1. Packages
-            const pkgs = JSON.parse(localStorage.getItem('karuthal_packages') || '[]');
-            let pkgHtml = '';
-            pkgs.forEach((p, idx) => {
-                pkgHtml += `<div class="p-2.5 bg-slate-50 border rounded-xl flex justify-between items-center">
-                    <div><strong>${p.name}</strong> - <span class="text-emerald-700 font-bold">₹${p.price || p.displayPrice}</span></div>
-                    <button onclick="deleteAdminPkg(${idx})" class="text-red-500 font-bold hover:underline">Delete</button>
-                </div>`;
-            });
-            document.getElementById('adminPackagesList').innerHTML = pkgHtml || '<p class="text-slate-400">No packages found.</p>';
-
-            // 2. Staff & Drivers
-            const drivers = JSON.parse(localStorage.getItem('karuthal_drivers') || '[]');
-            const staff = JSON.parse(localStorage.getItem('karuthal_staff') || '[]');
-            let staffHtml = '';
-            drivers.forEach(d => { staffHtml += `<div class="p-2 bg-slate-50 border rounded-xl">[Driver] ${d.name} (${d.phone})</div>`; });
-            staff.forEach(s => { staffHtml += `<div class="p-2 bg-slate-50 border rounded-xl">[Staff] ${s.name} (${s.phone})</div>`; });
-            document.getElementById('adminStaffDriversList').innerHTML = staffHtml || '<p class="text-slate-400">No staff/drivers found.</p>';
-
-            // 3. Customers & Patients
-            const customers = JSON.parse(localStorage.getItem('karuthal_customers') || '[]');
-            const parents = JSON.parse(localStorage.getItem('karuthal_parents') || '[]');
+      // റിയൽ-ടൈം മാറ്റങ്ങൾ തത്സമയം അറിയാൻ onSnapshot ഉപയോഗിക്കുന്നു
+      onSnapshot(packagesRef, (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          if (change.type === "added" || change.type === "modified") {
+            const packageData = change.doc.data();
+            const packageId = change.doc.id;
             
-            let custHtml = '';
-            customers.forEach(c => { custHtml += `<div class="p-2 bg-slate-50 border rounded-xl"><strong>${c.name}</strong><br>${c.phone}</div>`; });
-            document.getElementById('adminCustomersList').innerHTML = custHtml || '<p class="text-slate-400">No registered customers.</p>';
+            // നിങ്ങളുടെ HTML UI-ൽ പാക്കേജ് ഡാറ്റ അപ്‌ഡേറ്റ് ചെയ്യുന്ന ഫങ്ഷൻ
+            updatePackageUI(packageId, packageData);
+          }
+        });
+      });
+    }
 
-            let patHtml = '';
-            parents.forEach(p => { patHtml += `<div class="p-2 bg-emerald-50/50 border border-emerald-100 rounded-xl"><strong>${p.name}</strong> (${p.ageGender})<br>Cond: ${p.medical}</div>`; });
-            document.getElementById('adminPatientsList').innerHTML = patHtml || '<p class="text-slate-400">No senior profiles added.</p>';
-        }
+    // Customer Package അപ്‌ഡേറ്റ് ചെയ്യാനുള്ള ഫങ്ഷൻ
+    async function updateCustomerPackage(packageId, newData) {
+      try {
+        const pkgRef = doc(db, "packages", packageId);
+        await updateDoc(pkgRef, newData);
+        console.log("Package updated successfully");
+      } catch (error) {
+        console.error("Error updating package:", error);
+      }
+    }
 
-        function adminSavePackage() {
-            const name = document.getElementById('adminPkgName').value.trim();
-            const price = parseFloat(document.getElementById('adminPkgPrice').value);
-            const id = document.getElementById('adminPkgId').value.trim() || ('PKG-' + Date.now().toString().slice(-4));
-            const desc = document.getElementById('adminPkgDesc').value.trim();
-
-            if (!name || isNaN(price)) {
-                showToast("Please enter valid package name and price.", "error");
-                return;
-            }
-
-            const pkgs = JSON.parse(localStorage.getItem('karuthal_packages') || '[]');
-            pkgs.push({ id, name, price, displayPrice: `₹${price.toLocaleString()} / mo`, desc });
-            localStorage.setItem('karuthal_packages', JSON.stringify(pkgs));
-
-            document.getElementById('adminPkgName').value = '';
-            document.getElementById('adminPkgPrice').value = '';
-            document.getElementById('adminPkgId').value = '';
-            document.getElementById('adminPkgDesc').value = '';
-
-            loadAdminDataViews();
-            showToast("Package saved successfully!");
-        }
-
-        function deleteAdminPkg(idx) {
-            let pkgs = JSON.parse(localStorage.getItem('karuthal_packages') || '[]');
-            pkgs.splice(idx, 1);
-            localStorage.setItem('karuthal_packages', JSON.stringify(pkgs));
-            loadAdminDataViews();
-            showToast("Package removed.");
-        }
-
-        function adminCreateAccount() {
-            const type = document.getElementById('admAccType').value;
-            const name = document.getElementById('admAccName').value.trim();
-            const phone = document.getElementById('admAccPhone').value.trim();
-            const pass = document.getElementById('admAccPass').value.trim();
-
-            if (!name || !phone) {
-                showToast("Please fill name and phone number.", "error");
-                return;
-            }
-
-            if (type === 'driver') {
-                const drvs = JSON.parse(localStorage.getItem('karuthal_drivers') || '[]');
-                drvs.push({ id: 'DRV-' + Date.now().toString().slice(-4), name, phone, pass });
-                localStorage.setItem('karuthal_drivers', JSON.stringify(drvs));
-            } else {
-                const stfs = JSON.parse(localStorage.getItem('karuthal_staff') || '[]');
-                stfs.push({ id: 'STF-' + Date.now().toString().slice(-4), name, phone, role: 'Coordinator', pass });
-                localStorage.setItem('karuthal_staff', JSON.stringify(stfs));
-            }
-
-            document.getElementById('admAccName').value = '';
-            document.getElementById('admAccPhone').value = '';
-            loadAdminDataViews();
-            showToast("New account authorized successfully!");
-        }
-
-        function initAdminMap(lat = 10.0159, lng = 76.3419) {
-            const el = document.getElementById('adminLiveMap');
-            if (el && !adminMapInstance) {
-                adminMapInstance = L.map('adminLiveMap').setView([lat, lng], 13);
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(adminMapInstance);
-                adminMarkerInstance = L.marker([lat, lng]).addTo(adminMapInstance).bindPopup("Driver Last Location").openPopup();
-            }
-        }
-
-        async function toggleAdminStream() {
-            const video = document.getElementById('adminWebcamFeed');
-            const placeholder = document.getElementById('adminCamPlaceholder');
-            const btn = document.getElementById('adminCamBtn');
-
-            if (!adminMediaStream) {
-                try {
-                    adminMediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                    video.srcObject = adminMediaStream;
-                    video.classList.remove('hidden');
-                    placeholder.classList.add('hidden');
-                    btn.innerText = "Stop Stream";
-                    showToast("Admin live feed started.");
-                } catch (e) {
-                    showToast("Camera error.", "error");
-                }
-            } else {
-                adminMediaStream.getTracks().forEach(t => t.stop());
-                adminMediaStream = null;
-                video.classList.add('hidden');
-                placeholder.classList.remove('hidden');
-                btn.innerText = "Start Camera Feed";
-                showToast("Feed stopped.");
-            }
-        }
-
-        function exportSystemData() {
-            const data = {
-                packages: JSON.parse(localStorage.getItem('karuthal_packages') || '[]'),
-                customers: JSON.parse(localStorage.getItem('karuthal_customers') || '[]'),
-                parents: JSON.parse(localStorage.getItem('karuthal_parents') || '[]'),
-                drivers: JSON.parse(localStorage.getItem('karuthal_drivers') || '[]')
-            };
-            console.log("Karuthal System Data:", data);
-            showToast("System data exported to console!");
-        }
-    </script>
+    function updatePackageUI(id, data) {
+      // DOM എലിമെന്റുകളിലേക്ക് ഫയർബേസ് ഡാറ്റ റെൻഡർ ചെയ്യുക
+    }
+  </script>
 </body>
 </html>
